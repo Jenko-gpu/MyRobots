@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
@@ -48,7 +49,7 @@ public class MainApplicationFrame extends JFrame
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
                int result  = JOptionPane.showOptionDialog(getParent(),
-                        "Are you sure you want to close this window?", "Close Window?",
+                        "Вы точно хотите закрыть приложение?", "Закрыть приложение?",
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE, null, YES_NO_OPTION_RUS, YES_NO_OPTION_RUS[1]);
                if (result == JOptionPane.YES_OPTION){
