@@ -1,10 +1,9 @@
 package org.jenko.gui;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
@@ -25,7 +24,7 @@ import org.jenko.log.Logger;
  * Следует разделить его на серию более простых методов (или вообще выделить отдельный класс).
  *
  */
-public class MainApplicationFrame extends JFrame
+public class MainApplicationFrame extends JFrame implements SaveLoadWindow
 {
     private final JDesktopPane desktopPane = new JDesktopPane();
     
@@ -42,36 +41,45 @@ public class MainApplicationFrame extends JFrame
         setJMenuBar(generateMenuBar());
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
+        InitListeners();
+        InitSubWindows();
+
+    }
+
+    private void InitWindowsLoader(){
+
+    }
+
+    private void InitListeners(){
         addWindowListener(new java.awt.event.WindowAdapter() {
             Object[] YES_NO_OPTION_RUS = {
                     "Да", "Нет"
             };
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-               int result  = JOptionPane.showOptionDialog(getParent(),
+                int result  = JOptionPane.showOptionDialog(getParent(),
                         "Вы точно хотите закрыть приложение?", "Закрыть приложение?",
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE, null, YES_NO_OPTION_RUS, YES_NO_OPTION_RUS[1]);
-               if (result == JOptionPane.YES_OPTION){
+                if (result == JOptionPane.YES_OPTION){
                     System.out.println("Program is closing");
+                    Save();
                     System.exit(0);
 
                 }
             }
         });
+    }
 
-
-
+    private void InitSubWindows(){
         LogWindow logWindow = createLogWindow();
         addWindow(logWindow);
 
         GameWindow gameWindow = new GameWindow();
         gameWindow.setSize(400,  400);
         addWindow(gameWindow);
+    };
 
-
-    }
-    
     protected LogWindow createLogWindow()
     {
         LogWindow logWindow = new LogWindow(Logger.getDefaultLogSource());
@@ -175,5 +183,35 @@ public class MainApplicationFrame extends JFrame
         {
             // just ignore
         }
+    }
+
+    @Override
+    public void Save() {
+        Map<String,WindowData> temp = new HashMap<String,WindowData>();
+
+        WindowData windowData = new WindowData();
+        windowData.is_hidden = isActive();
+        windowData.pos_y = getY();
+        windowData.pos_x = getX();
+        windowData.width = getWidth();
+        windowData.height = getHeight();
+        temp.put(getName(),windowData);
+        for (Frame frame: getFrames()){
+            WindowData windowData1 = new WindowData();
+            windowData1.is_hidden = frame.isActive();
+            windowData1.pos_y = frame.getY();
+            windowData1.pos_x = frame.getX();
+            windowData1.width = frame.getWidth();
+            windowData1.height = frame.getHeight();
+            temp.put(frame.getName(),windowData1);
+        }
+
+        System.out.println(temp.values());
+        new FileGetter().send(temp);
+    }
+
+    @Override
+    public void Load(WindowData data) {
+
     }
 }

@@ -11,7 +11,7 @@ import org.jenko.log.LogChangeListener;
 import org.jenko.log.LogEntry;
 import org.jenko.log.LogWindowSource;
 
-public class LogWindow extends JInternalFrame implements LogChangeListener
+public class LogWindow extends JInternalFrame implements LogChangeListener, SaveLoadWindow
 {
     private LogWindowSource m_logSource;
     private TextArea m_logContent;
@@ -46,5 +46,15 @@ public class LogWindow extends JInternalFrame implements LogChangeListener
     public void onLogChanged()
     {
         EventQueue.invokeLater(this::updateLogContent);
+    }
+
+    @Override
+    public void Save() {
+
+    }
+
+    @Override
+    public void Load(WindowData data) {
+
     }
 }

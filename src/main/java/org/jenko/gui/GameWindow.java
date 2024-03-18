@@ -5,8 +5,7 @@ import java.awt.BorderLayout;
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 
-public class GameWindow extends JInternalFrame
-{
+public class GameWindow extends JInternalFrame implements SaveLoadWindow {
     private final GameVisualizer m_visualizer;
     public GameWindow() 
     {
@@ -16,5 +15,15 @@ public class GameWindow extends JInternalFrame
         panel.add(m_visualizer, BorderLayout.CENTER);
         getContentPane().add(panel);
         pack();
+    }
+
+    @Override
+    public void Save() {
+
+    }
+
+    @Override
+    public void Load(WindowData data) {
+
     }
 }
