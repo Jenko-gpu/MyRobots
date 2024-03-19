@@ -63,7 +63,7 @@ public class MainApplicationFrame extends JFrame implements SaveLoadWindow
                         JOptionPane.QUESTION_MESSAGE, null, YES_NO_OPTION_RUS, YES_NO_OPTION_RUS[1]);
                 if (result == JOptionPane.YES_OPTION){
                     System.out.println("Program is closing");
-                    Save();
+                    //Save();
                     System.exit(0);
 
                 }
