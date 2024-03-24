@@ -3,8 +3,7 @@ package org.jenko.gui;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
-import java.util.HashMap;
-import java.util.Map;
+
 
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
@@ -51,7 +50,7 @@ public class MainApplicationFrame extends JFrame implements SaveLoadWindow
     private void InitListeners(){
         addWindowListener(new java.awt.event.WindowAdapter() {
 
-            Object[] YES_NO_OPTION_RUS = {
+            final Object[]  YES_NO_OPTION_RUS = {
                     "Да", "Нет"
             };
             @Override
@@ -77,7 +76,7 @@ public class MainApplicationFrame extends JFrame implements SaveLoadWindow
         GameWindow gameWindow = new GameWindow();
         gameWindow.setSize(400,  400);
         addWindow(gameWindow);
-    };
+    }
 
     protected LogWindow createLogWindow() {
         LogWindow logWindow = new LogWindow(Logger.getDefaultLogSource());
