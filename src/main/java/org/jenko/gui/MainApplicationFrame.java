@@ -162,15 +162,12 @@ public class MainApplicationFrame extends JFrame implements SaveLoadWindow
         }
 
 
-
         JMenuItem quitItem = new JMenuItem("Выйти из приложения", KeyEvent.VK_X);
             quitItem.addActionListener((event) -> {
             Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(
                     new WindowEvent(this, WindowEvent.WINDOW_CLOSING)
             );
         });
-
-
 
         menuBar.add(lookAndFeelMenu);
         menuBar.add(testMenu);
