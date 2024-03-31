@@ -45,7 +45,7 @@ public class FileGetter implements DataGetter {
         }catch (Exception e){
             e.printStackTrace();
         }
-        return null;
+        return new HashMap<String, WindowData>();
     }
 
     @Override

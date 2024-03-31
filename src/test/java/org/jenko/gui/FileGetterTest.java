@@ -30,11 +30,11 @@ class FileGetterTest {
         data1.pos_y = 1;
         data1.is_hidden = false;
 
-        data2.height = 1;
-        data2.width = 1;
-        data2.pos_x = 1;
-        data2.pos_y = 1;
-        data2.is_hidden = false;
+        data2.height = 2;
+        data2.width = 2;
+        data2.pos_x = 2;
+        data2.pos_y = 2;
+        data2.is_hidden = true;
 
         HashMap<String,WindowData> map = new HashMap<String, WindowData>();
         map.put("data1",data1);

@@ -1,7 +1,7 @@
 package org.jenko.gui;
 
 public interface SaveLoadWindow {
-    public void Save();
+    public WindowData Save();
 
-    public void Load(WindowData data);
+
 }

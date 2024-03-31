@@ -28,15 +28,30 @@ public class MainApplicationFrame extends JFrame implements SaveLoadWindow
 {
     private final JDesktopPane desktopPane = new JDesktopPane();
 
-    public MainApplicationFrame() {
-        //Make the big window be indented 50 pixels from each edge
-        //of the screen.
-        int inset = 50;
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        setBounds(inset, inset,
-            screenSize.width/ - inset*2,
-            screenSize.height/ - inset*2);
+    public final String FrameName = "MainFrame";
 
+    public MainApplicationFrame() {
+
+        //Make the big window be indented 50 pixels from each edge
+        //of the screen. {"LogWindow":null,"MainFrame":{"pos_x":603,"pos_y":76,"is_hidden":false,"width":779,"height":800}}
+        SingletonWindow.getInstance().ConnectToSingleton(this, this.FrameName);
+        WindowData windowData = SingletonWindow.getInstance().loadData(this.FrameName);
+        int inset = 50;
+        this.setVisible(true);
+        if (windowData == null){
+
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            setBounds(inset, inset,
+                screenSize.width/ - inset*2,
+                screenSize.height/ - inset*2);
+        } else {
+            System.out.println(' '+windowData.pos_x+" "+windowData.pos_y);
+            this.setLocation(windowData.pos_x, windowData.pos_y);
+            this.setSize(windowData.width,windowData.height);
+            if (windowData.is_hidden)
+            this.setState(Frame.ICONIFIED);
+            else this.setState(Frame.NORMAL);
+        }
         setContentPane(desktopPane);
         setJMenuBar(generateMenuBar());
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -61,9 +76,7 @@ public class MainApplicationFrame extends JFrame implements SaveLoadWindow
                         JOptionPane.QUESTION_MESSAGE, null, YES_NO_OPTION_RUS, YES_NO_OPTION_RUS[1]);
                 if (result == JOptionPane.YES_OPTION){
                     System.out.println("Program is closing");
-                    //Save();
-                    System.exit(0);
-
+                    SingletonWindow.getInstance().ClosingWindows();
                 }
             }
         });
@@ -74,16 +87,12 @@ public class MainApplicationFrame extends JFrame implements SaveLoadWindow
         addWindow(logWindow);
 
         GameWindow gameWindow = new GameWindow();
-        gameWindow.setSize(400,  400);
         addWindow(gameWindow);
     }
 
     protected LogWindow createLogWindow() {
         LogWindow logWindow = new LogWindow(Logger.getDefaultLogSource());
-        logWindow.setLocation(10,10);
-        logWindow.setSize(300, 800);
-        setMinimumSize(logWindow.getSize());
-        logWindow.pack();
+
         Logger.debug("Протокол работает");
         return logWindow;
     }
@@ -189,12 +198,14 @@ public class MainApplicationFrame extends JFrame implements SaveLoadWindow
     }
 
     @Override
-    public void Save() {
-
+    public WindowData Save() {
+        WindowData windowData = new WindowData();
+        windowData.is_hidden = this.getState() == 1 ? true : false;
+        windowData.pos_x = this.getX() > 0? this.getX() : 0;
+        windowData.pos_y =this.getY() > 0? this.getY() : 0;
+        windowData.width = this.getWidth() > 0? this.getWidth() : 0;
+        windowData.height = this.getHeight() > 0? this.getHeight() : 0;
+        return windowData;
     }
 
-    @Override
-    public void Load(WindowData data) {
-
-    }
 }

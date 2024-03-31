@@ -1,8 +1,7 @@
 package org.jenko.gui;
 
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
-import java.awt.TextArea;
+import java.awt.*;
+import java.beans.PropertyVetoException;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
@@ -16,18 +15,36 @@ public class LogWindow extends JInternalFrame implements LogChangeListener, Save
     private LogWindowSource m_logSource;
     private TextArea m_logContent;
 
-    public LogWindow(LogWindowSource logSource) 
+    public final String FrameName = "LogWindow";
+
+    public LogWindow(LogWindowSource logSource)
     {
         super("Протокол работы", true, true, true, true);
         m_logSource = logSource;
         m_logSource.registerListener(this);
         m_logContent = new TextArea("");
-        m_logContent.setSize(200, 500);
-        
+
+        SingletonWindow.getInstance().ConnectToSingleton(this, this.FrameName);
+        WindowData windowData = SingletonWindow.getInstance().loadData(FrameName);
+        if (windowData == null) {
+            this.setLocation(10,10);
+            this.setSize(200, 500);
+            this.pack();
+            setMinimumSize(this.getSize());
+            m_logContent.setSize(200, 500);
+        }
+        else{
+            this.setLocation(windowData.pos_x,windowData.pos_y);
+            this.setSize(windowData.width,windowData.height);
+            try {
+                this.setIcon(windowData.is_hidden);
+            } catch (PropertyVetoException e) {
+                throw new RuntimeException(e);
+            }
+        }
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(m_logContent, BorderLayout.CENTER);
         getContentPane().add(panel);
-        pack();
         updateLogContent();
     }
 
@@ -49,12 +66,15 @@ public class LogWindow extends JInternalFrame implements LogChangeListener, Save
     }
 
     @Override
-    public void Save() {
-
+    public WindowData Save() {
+        WindowData windowData = new WindowData();
+        windowData.is_hidden = this.isIcon();
+        windowData.pos_x = this.getX() > 0? this.getX() : 0;
+        windowData.pos_y =this.getY() > 0? this.getY() : 0;
+        windowData.width = this.getWidth() > 0? this.getWidth() : 0;
+        windowData.height = this.getHeight() > 0 ? this.getHeight(): 0;
+        return windowData;
     }
 
-    @Override
-    public void Load(WindowData data) {
 
-    }
 }
