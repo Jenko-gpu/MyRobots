@@ -44,6 +44,7 @@ public class MainApplicationFrame extends JFrame implements SaveLoadWindow
             setBounds(inset, inset,
                 screenSize.width/ - inset*2,
                 screenSize.height/ - inset*2);
+            this.setExtendedState(Frame.MAXIMIZED_BOTH);
         } else {
             System.out.println(' '+windowData.pos_x+" "+windowData.pos_y);
             this.setLocation(windowData.pos_x, windowData.pos_y);
@@ -87,6 +88,7 @@ public class MainApplicationFrame extends JFrame implements SaveLoadWindow
         addWindow(logWindow);
 
         GameWindow gameWindow = new GameWindow();
+
         addWindow(gameWindow);
     }
 

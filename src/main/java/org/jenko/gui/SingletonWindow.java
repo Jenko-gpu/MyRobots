@@ -10,6 +10,7 @@ public final class SingletonWindow {
     private static SingletonWindow uniqInstance;
     private Map<String,WindowData> data = new HashMap<String, WindowData>();
 
+    private boolean first_load = true;
     private Map<String, SaveLoadWindow> frames = new HashMap<String,SaveLoadWindow>();
 
     private FileGetter fileGetter = new FileGetter();
@@ -26,9 +27,11 @@ public final class SingletonWindow {
 
     public WindowData loadData(String window_name)
     {
-        if (data.size() == 0){
+        if (first_load){
             data = fileGetter.get();
+            first_load = false;
         }
+
         if (data.containsKey(window_name)){
             return data.get(window_name);
         }

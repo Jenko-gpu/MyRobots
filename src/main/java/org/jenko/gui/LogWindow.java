@@ -20,18 +20,17 @@ public class LogWindow extends JInternalFrame implements LogChangeListener, Save
     public LogWindow(LogWindowSource logSource)
     {
         super("Протокол работы", true, true, true, true);
-        m_logSource = logSource;
-        m_logSource.registerListener(this);
-        m_logContent = new TextArea("");
 
         SingletonWindow.getInstance().ConnectToSingleton(this, this.FrameName);
         WindowData windowData = SingletonWindow.getInstance().loadData(FrameName);
+
+        Dimension dimension = new Dimension(300,700);
+
         if (windowData == null) {
+
             this.setLocation(10,10);
-            this.setSize(200, 500);
-            this.pack();
-            setMinimumSize(this.getSize());
-            m_logContent.setSize(200, 500);
+            this.setSize(dimension);
+            setMinimumSize(dimension);
         }
         else{
             this.setLocation(windowData.pos_x,windowData.pos_y);
@@ -42,6 +41,10 @@ public class LogWindow extends JInternalFrame implements LogChangeListener, Save
                 throw new RuntimeException(e);
             }
         }
+        m_logSource = logSource;
+        m_logSource.registerListener(this);
+        m_logContent = new TextArea("");
+        m_logContent.setSize(200, 500);
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(m_logContent, BorderLayout.CENTER);
         getContentPane().add(panel);

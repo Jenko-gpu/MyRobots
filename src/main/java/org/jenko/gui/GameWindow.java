@@ -16,9 +16,9 @@ public class GameWindow extends JInternalFrame implements SaveLoadWindow {
         SingletonWindow.getInstance().ConnectToSingleton(this, this.FrameName);
         WindowData windowData = SingletonWindow.getInstance().loadData(FrameName);
         if (windowData == null){
-            this.setSize(300, 400);
+            this.setSize(400, 500);
             this.setLocation(15, 15);
-            pack();
+            setMinimumSize(this.getSize());
         } else{
             this.setLocation(windowData.pos_x, windowData.pos_y);
             this.setSize(windowData.width, windowData.height);

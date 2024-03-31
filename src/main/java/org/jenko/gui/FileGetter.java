@@ -23,11 +23,17 @@ public class FileGetter implements DataGetter {
     @Override
     public Map<String, WindowData> get() {
         try {
-
-            BufferedReader reader = new BufferedReader(new FileReader("C:\\RobotsConfig\\config.json"));
+            String cur_path = new File("").getAbsolutePath();
+            File f = new File(cur_path+"\\robots.config");
+            if (!f.exists()){
+                f.createNewFile();
+            }
+            BufferedReader reader = new BufferedReader(new FileReader(cur_path+"\\robots.config"));
             String raw_data = reader.readLine();
             reader.close();
-
+            if (raw_data == null){
+                return new HashMap<String, WindowData>();
+            }
             ObjectMapper mapper = new ObjectMapper();
 
             TypeReference<Map<String,WindowData>> typeRef = new TypeReference<>() {
@@ -52,7 +58,8 @@ public class FileGetter implements DataGetter {
     public void send(Map<String,WindowData> data) {
         ObjectMapper mapper = new ObjectMapper().configure( SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS,false);
         try {
-            mapper.writeValue(new File("C:\\RobotsConfig\\config.json"), data);
+            String cur_path = new File("").getAbsolutePath();
+            mapper.writeValue(new File(cur_path+"\\robots.config"), data);
 
         } catch (IOException e) {
             e.printStackTrace();
