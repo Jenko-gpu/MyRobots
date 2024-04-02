@@ -23,7 +23,11 @@ public class FileGetter implements DataGetter {
     @Override
     public Map<String, WindowData> get() {
         try {
-            String cur_path = new File("").getAbsolutePath();
+            String cur_path = System.getProperty("user.home") + "\\MyRobotsConf";
+            File theDir = new File(cur_path);
+            if (!theDir.exists()){
+                theDir.mkdirs();
+            }
             File f = new File(cur_path+"\\robots.config");
             if (!f.exists()){
                 f.createNewFile();
@@ -58,7 +62,16 @@ public class FileGetter implements DataGetter {
     public void send(Map<String,WindowData> data) {
         ObjectMapper mapper = new ObjectMapper().configure( SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS,false);
         try {
-            String cur_path = new File("").getAbsolutePath();
+            String cur_path = System.getProperty("user.home") + "\\MyRobotsConf";
+            File theDir = new File(cur_path);
+            if (!theDir.exists()){
+                theDir.mkdirs();
+            }
+            File f = new File(cur_path+"\\robots.config");
+            if (!f.exists()){
+                f.createNewFile();
+            }
+
             mapper.writeValue(new File(cur_path+"\\robots.config"), data);
 
         } catch (IOException e) {

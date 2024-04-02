@@ -38,6 +38,7 @@ public class MainApplicationFrame extends JFrame implements SaveLoadWindow
         WindowData windowData = SingletonWindow.getInstance().loadData(this.FrameName);
         int inset = 50;
         this.setVisible(true);
+        this.setMinimumSize(new Dimension(500,400));
         if (windowData == null){
 
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
