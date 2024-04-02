@@ -6,10 +6,7 @@
     <groupId>org.jenko</groupId>
     <artifactId>MyRobots</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
-    <modules>
-        <module>untitled</module>
-    </modules>
+
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
