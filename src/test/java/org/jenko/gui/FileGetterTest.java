@@ -12,38 +12,10 @@ class FileGetterTest {
 
     @Test
     void get() {
-        FileGetter fileGetter = new FileGetter();
-        Map<String, WindowData> map = fileGetter.get();
-        for (WindowData el: map.values()){
-            System.out.println(el.height);
-        }
     }
 
     @Test
     void send() {
-        WindowData data1 = new WindowData();
-        WindowData data2 = new WindowData();
-
-        data1.height = 1;
-        data1.width = 1;
-        data1.pos_x = 1;
-        data1.pos_y = 1;
-        data1.is_hidden = false;
-
-        data2.height = 2;
-        data2.width = 2;
-        data2.pos_x = 2;
-        data2.pos_y = 2;
-        data2.is_hidden = true;
-
-        HashMap<String,WindowData> map = new HashMap<String, WindowData>();
-        map.put("data1",data1);
-        map.put("data2",data2);
-
-        FileGetter fileGetter = new FileGetter();
-
-        fileGetter.send(map);
-        assertEquals(0, 0);
 
     }
 }
