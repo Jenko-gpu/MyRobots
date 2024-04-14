@@ -1,14 +1,14 @@
 package org.jenko.gui;
 
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.beans.PropertyVetoException;
-
-import javax.swing.JInternalFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 public class GameWindow extends JInternalFrame implements SaveLoadWindow {
     private final GameVisualizer m_visualizer;
     private final String FrameName = "GameWindow";
+
+
 
     public GameWindow()
     {
@@ -34,16 +34,20 @@ public class GameWindow extends JInternalFrame implements SaveLoadWindow {
         panel.add(m_visualizer);
         getContentPane().add(panel);
 
+
     }
 
+    public void setObserver(GameStateObserver observer){
+        m_visualizer.observer = observer;
+    }
     @Override
     public WindowData Save() {
         WindowData windowData = new WindowData();
         windowData.is_hidden = this.isIcon();
-        windowData.pos_x = this.getX() > 0? this.getX() : 0;
-        windowData.pos_y =this.getY() > 0? this.getY() : 0;
-        windowData.width = this.getWidth() > 0? this.getWidth() : 0;
-        windowData.height = this.getHeight() > 0 ? this.getHeight(): 0;
+        windowData.pos_x = Math.max(this.getX(), 0);
+        windowData.pos_y = Math.max(this.getY(), 0);
+        windowData.width = Math.max(this.getWidth(), 0);
+        windowData.height = Math.max(this.getHeight(), 0);
         return windowData;
     }
 

@@ -47,7 +47,6 @@ public class MainApplicationFrame extends JFrame implements SaveLoadWindow
                 screenSize.height/ - inset*2);
             this.setExtendedState(Frame.MAXIMIZED_BOTH);
         } else {
-            System.out.println(' '+windowData.pos_x+" "+windowData.pos_y);
             this.setLocation(windowData.pos_x, windowData.pos_y);
             this.setSize(windowData.width,windowData.height);
             if (windowData.is_hidden)
@@ -89,8 +88,11 @@ public class MainApplicationFrame extends JFrame implements SaveLoadWindow
         addWindow(logWindow);
 
         GameWindow gameWindow = new GameWindow();
-
         addWindow(gameWindow);
+
+        GameStatesWindow gameStatesWindow = new GameStatesWindow();
+        addWindow(gameStatesWindow);
+        gameWindow.setObserver(gameStatesWindow);
     }
 
     protected LogWindow createLogWindow() {
@@ -203,11 +205,11 @@ public class MainApplicationFrame extends JFrame implements SaveLoadWindow
     @Override
     public WindowData Save() {
         WindowData windowData = new WindowData();
-        windowData.is_hidden = this.getState() == 1 ? true : false;
-        windowData.pos_x = this.getX() > 0? this.getX() : 0;
-        windowData.pos_y =this.getY() > 0? this.getY() : 0;
-        windowData.width = this.getWidth() > 0? this.getWidth() : 0;
-        windowData.height = this.getHeight() > 0? this.getHeight() : 0;
+        windowData.is_hidden = this.getState() == 1;
+        windowData.pos_x = Math.max(this.getX(), 0);
+        windowData.pos_y = Math.max(this.getY(), 0);
+        windowData.width = Math.max(this.getWidth(), 0);
+        windowData.height = Math.max(this.getHeight(), 0);
         return windowData;
     }
 
