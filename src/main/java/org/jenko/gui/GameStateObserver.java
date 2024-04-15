@@ -1,6 +1,6 @@
 package org.jenko.gui;
 
 public interface GameStateObserver {
-     void gameStateHasChanged(int x,int y, double angle);
+     <T,R,M extends Number> void gameStateHasChanged(T x, R y, M angle);
 
 }

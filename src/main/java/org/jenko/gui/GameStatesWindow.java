@@ -31,7 +31,7 @@ public class GameStatesWindow extends JInternalFrame implements GameStateObserve
 
 
     @Override
-    public void gameStateHasChanged(int x, int y, double angle) {
+    public <R,T,M extends Number> void gameStateHasChanged(R x, T y, M angle) {
 
         displayPos.setText("Робот на координате "+ x +":"+ y);
         displayAngle.setText("Угол робота: "+ angle);

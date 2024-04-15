@@ -10,7 +10,7 @@ public class GameWindow extends JInternalFrame implements SaveLoadWindow {
 
 
 
-    public GameWindow()
+    public GameWindow(GameStateObserver observer)
     {
         super("Игровое поле", true, true, true, true);
         SingletonWindow.getInstance().ConnectToSingleton(this, this.FrameName);
@@ -29,7 +29,7 @@ public class GameWindow extends JInternalFrame implements SaveLoadWindow {
             }
         }
 
-        m_visualizer = new GameVisualizer();
+        m_visualizer = new GameVisualizer(new RobotModel(observer));
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(m_visualizer);
         getContentPane().add(panel);
@@ -37,9 +37,6 @@ public class GameWindow extends JInternalFrame implements SaveLoadWindow {
 
     }
 
-    public void setObserver(GameStateObserver observer){
-        m_visualizer.observer = observer;
-    }
     @Override
     public WindowData Save() {
         WindowData windowData = new WindowData();

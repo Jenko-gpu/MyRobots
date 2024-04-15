@@ -87,12 +87,12 @@ public class MainApplicationFrame extends JFrame implements SaveLoadWindow
         LogWindow logWindow = createLogWindow();
         addWindow(logWindow);
 
-        GameWindow gameWindow = new GameWindow();
-        addWindow(gameWindow);
-
         GameStatesWindow gameStatesWindow = new GameStatesWindow();
         addWindow(gameStatesWindow);
-        gameWindow.setObserver(gameStatesWindow);
+
+        GameWindow gameWindow = new GameWindow(gameStatesWindow);
+        addWindow(gameWindow);
+
     }
 
     protected LogWindow createLogWindow() {
