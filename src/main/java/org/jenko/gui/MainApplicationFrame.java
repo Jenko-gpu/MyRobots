@@ -24,18 +24,22 @@ import org.jenko.log.Logger;
  * Следует разделить его на серию более простых методов (или вообще выделить отдельный класс).
  *
  */
-public class MainApplicationFrame extends JFrame implements SaveLoadWindow
+public class MainApplicationFrame extends JFrame implements SaveLoadableWindow
 {
     private final JDesktopPane desktopPane = new JDesktopPane();
 
     public final String FrameName = "MainFrame";
 
+    final Object[]  YES_NO_OPTION_RUS = {
+            "Да", "Нет"
+    };
+
     public MainApplicationFrame() {
 
         //Make the big window be indented 50 pixels from each edge
         //of the screen. {"LogWindow":null,"MainFrame":{"pos_x":603,"pos_y":76,"is_hidden":false,"width":779,"height":800}}
-        SingletonWindow.getInstance().ConnectToSingleton(this, this.FrameName);
-        WindowData windowData = SingletonWindow.getInstance().loadData(this.FrameName);
+        WindowSaveLoader.getInstance().connect(this, this.FrameName);
+        WindowData windowData = WindowSaveLoader.getInstance().loadWindowStates(this.FrameName);
         int inset = 50;
         this.setVisible(true);
         this.setMinimumSize(new Dimension(500,400));
@@ -67,9 +71,6 @@ public class MainApplicationFrame extends JFrame implements SaveLoadWindow
     private void InitListeners(){
         addWindowListener(new java.awt.event.WindowAdapter() {
 
-            final Object[]  YES_NO_OPTION_RUS = {
-                    "Да", "Нет"
-            };
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
                 int result  = JOptionPane.showOptionDialog(getParent(),
@@ -78,14 +79,21 @@ public class MainApplicationFrame extends JFrame implements SaveLoadWindow
                         JOptionPane.QUESTION_MESSAGE, null, YES_NO_OPTION_RUS, YES_NO_OPTION_RUS[1]);
                 if (result == JOptionPane.YES_OPTION){
                     System.out.println("Program is closing");
-                    SingletonWindow.getInstance().ClosingWindows();
+
+                    // Передаём сигнал синглтону о том, что приложение нужно закрыть и сохранить
+                    WindowSaveLoader.getInstance().closingWindows();
                 }
             }
         });
     }
 
+
+    /**
+     * Открытие внутренних окон.
+     */
     private void InitSubWindows(){
-        LogWindow logWindow = createLogWindow();
+        LogWindow logWindow =  new LogWindow(Logger.getDefaultLogSource());
+        Logger.debug("Протокол логирования работает");
         addWindow(logWindow);
 
         GameWindow gameWindow = new GameWindow();
@@ -93,12 +101,6 @@ public class MainApplicationFrame extends JFrame implements SaveLoadWindow
         addWindow(gameWindow);
     }
 
-    protected LogWindow createLogWindow() {
-        LogWindow logWindow = new LogWindow(Logger.getDefaultLogSource());
-
-        Logger.debug("Протокол работает");
-        return logWindow;
-    }
 
     protected void addWindow(JInternalFrame frame) {
         desktopPane.add(frame);
@@ -202,13 +204,9 @@ public class MainApplicationFrame extends JFrame implements SaveLoadWindow
 
     @Override
     public WindowData Save() {
-        WindowData windowData = new WindowData();
-        windowData.is_hidden = this.getState() == 1 ? true : false;
-        windowData.pos_x = this.getX() > 0? this.getX() : 0;
-        windowData.pos_y =this.getY() > 0? this.getY() : 0;
-        windowData.width = this.getWidth() > 0? this.getWidth() : 0;
-        windowData.height = this.getHeight() > 0? this.getHeight() : 0;
-        return windowData;
+        WindowData data = GetStateForComponent.get(this);
+        data.is_hidden = this.getState() == Frame.ICONIFIED ? true: false;
+        return data;
     }
 
 }

@@ -6,15 +6,15 @@ import java.beans.PropertyVetoException;
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 
-public class GameWindow extends JInternalFrame implements SaveLoadWindow {
+public class GameWindow extends JInternalFrame implements SaveLoadableWindow {
     private final GameVisualizer m_visualizer;
     private final String FrameName = "GameWindow";
 
     public GameWindow()
     {
         super("Игровое поле", true, true, true, true);
-        SingletonWindow.getInstance().ConnectToSingleton(this, this.FrameName);
-        WindowData windowData = SingletonWindow.getInstance().loadData(FrameName);
+        WindowSaveLoader.getInstance().connect(this, this.FrameName);
+        WindowData windowData = WindowSaveLoader.getInstance().loadWindowStates(FrameName);
         if (windowData == null){
             this.setSize(400, 500);
             this.setLocation(15, 15);
@@ -25,8 +25,9 @@ public class GameWindow extends JInternalFrame implements SaveLoadWindow {
             try {
                 this.setIcon(windowData.is_hidden);
             } catch (PropertyVetoException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
+
         }
 
         m_visualizer = new GameVisualizer();
@@ -38,13 +39,9 @@ public class GameWindow extends JInternalFrame implements SaveLoadWindow {
 
     @Override
     public WindowData Save() {
-        WindowData windowData = new WindowData();
-        windowData.is_hidden = this.isIcon();
-        windowData.pos_x = this.getX() > 0? this.getX() : 0;
-        windowData.pos_y =this.getY() > 0? this.getY() : 0;
-        windowData.width = this.getWidth() > 0? this.getWidth() : 0;
-        windowData.height = this.getHeight() > 0 ? this.getHeight(): 0;
-        return windowData;
+        WindowData data = GetStateForComponent.get(this);
+        data.is_hidden = this.isIcon;
+        return data;
     }
 
 

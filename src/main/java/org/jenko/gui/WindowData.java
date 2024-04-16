@@ -1,6 +1,9 @@
 package org.jenko.gui;
 
-
+/**
+ * Основные данные окна
+ * (положение, размер, свёрнуто ли)
+ */
 public class WindowData{
     int pos_x;
     int pos_y;

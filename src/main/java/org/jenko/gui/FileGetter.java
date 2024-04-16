@@ -5,34 +5,52 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
 
 
 import org.codehaus.jackson.type.TypeReference;
+/**
+ * Получение и сохранение данных окн в файл
+ *
+ */
+public class FileGetter{
 
+    private String curpath;
+    private String filename;
 
-import javax.imageio.IIOException;
+    private File file;
 
-public class FileGetter implements DataGetter {
-    @Override
-    public Map<String, WindowData> get() {
+    FileGetter(){
+        curpath = System.getProperty("user.home") + "\\MyRobotsConf";
+        filename = curpath + "\\robots.config";
+        File dir = new File(curpath);
+        if (!dir.exists()){
+            dir.mkdirs();
+        }
         try {
-            String cur_path = System.getProperty("user.home") + "\\MyRobotsConf";
-            File theDir = new File(cur_path);
-            if (!theDir.exists()){
-                theDir.mkdirs();
+            file = new File(filename);
+            if (!file.exists()){
+                file.createNewFile();
             }
-            File f = new File(cur_path+"\\robots.config");
-            if (!f.exists()){
-                f.createNewFile();
-            }
-            BufferedReader reader = new BufferedReader(new FileReader(cur_path+"\\robots.config"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Получить данные окон
+     * @return
+     */
+    public Map<String, WindowData> get() {
+
+        try (
+                FileReader fileReader = new FileReader(filename);
+                BufferedReader reader = new BufferedReader(fileReader)
+        ) {
             String raw_data = reader.readLine();
             reader.close();
             if (raw_data == null){
@@ -58,21 +76,14 @@ public class FileGetter implements DataGetter {
         return new HashMap<String, WindowData>();
     }
 
-    @Override
+    /**
+     * Сохранить данные окон
+     * @param data
+     */
     public void send(Map<String,WindowData> data) {
         ObjectMapper mapper = new ObjectMapper().configure( SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS,false);
         try {
-            String cur_path = System.getProperty("user.home") + "\\MyRobotsConf";
-            File theDir = new File(cur_path);
-            if (!theDir.exists()){
-                theDir.mkdirs();
-            }
-            File f = new File(cur_path+"\\robots.config");
-            if (!f.exists()){
-                f.createNewFile();
-            }
-
-            mapper.writeValue(new File(cur_path+"\\robots.config"), data);
+            mapper.writeValue(file, data);
 
         } catch (IOException e) {
             e.printStackTrace();
