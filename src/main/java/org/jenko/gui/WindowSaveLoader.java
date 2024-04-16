@@ -48,7 +48,6 @@ public final class WindowSaveLoader {
      */
     public void connect(SaveLoadableWindow frame, String name){
         frames.put(name, frame);
-        //Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
     }
 
     /**

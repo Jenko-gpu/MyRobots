@@ -2,6 +2,10 @@ package org.jenko.gui;
 
 import java.awt.*;
 
+/**
+ * Модель робота, отвечающая за его движение.
+ *
+ */
 public class RobotModel {
 
     volatile double m_PositionX = 100;
@@ -20,10 +24,6 @@ public class RobotModel {
         this.observer = observer;
     }
 
-    @Deprecated
-    RobotModel(){
-
-    }
 
     private static double distance(double x1, double y1, double x2, double y2)
     {
@@ -52,6 +52,10 @@ public class RobotModel {
     {
         return (int)(value + 0.5);
     }
+
+    /**
+     * Выполнить задачу робота
+     */
     public void UpdateRobot()
     {
         double distance = distance( m_targetPositionX,  m_targetPositionY,
@@ -63,7 +67,7 @@ public class RobotModel {
         double velocity =  maxVelocity;
         double angleToTarget = angleTo( m_PositionX,  m_PositionY,  m_targetPositionX,  m_targetPositionY);
         double angularVelocity = 0;
-        double angleDiff =Math.abs(angleToTarget -  m_Direction);
+        double angleDiff = Math.abs(angleToTarget -  m_Direction);
         if (angleDiff < Math.PI){
             if (angleToTarget >  m_Direction)
             {
@@ -90,6 +94,10 @@ public class RobotModel {
     public double VisualAngle(){
         return (360 - m_Direction*180/Math.PI);
     }
+
+    /**
+     * Передвинуть робота
+     */
     private void moveRobot(double velocity, double angularVelocity, double duration)
     {
         velocity = applyLimits(velocity, 0,  maxVelocity);

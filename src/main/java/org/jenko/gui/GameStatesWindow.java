@@ -3,6 +3,9 @@ package org.jenko.gui;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Окно показывающее координаты робота
+ */
 public class GameStatesWindow extends JInternalFrame implements GameStateObserver {
     private JLabel displayPos;
     private JLabel displayAngle;

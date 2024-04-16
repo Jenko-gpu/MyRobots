@@ -24,7 +24,7 @@ import org.jenko.log.Logger;
  * Следует разделить его на серию более простых методов (или вообще выделить отдельный класс).
  *
  */
-public class MainApplicationFrame extends JFrame implements SaveLoadWindow
+public class MainApplicationFrame extends JFrame implements SaveLoadableWindow
 {
     private final JDesktopPane desktopPane = new JDesktopPane();
 
@@ -71,9 +71,6 @@ public class MainApplicationFrame extends JFrame implements SaveLoadWindow
     private void InitListeners(){
         addWindowListener(new java.awt.event.WindowAdapter() {
 
-            final Object[]  YES_NO_OPTION_RUS = {
-                    "Да", "Нет"
-            };
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
                 int result  = JOptionPane.showOptionDialog(getParent(),
@@ -82,7 +79,7 @@ public class MainApplicationFrame extends JFrame implements SaveLoadWindow
                         JOptionPane.QUESTION_MESSAGE, null, YES_NO_OPTION_RUS, YES_NO_OPTION_RUS[1]);
                 if (result == JOptionPane.YES_OPTION){
                     System.out.println("Program is closing");
-                    SingletonWindow.getInstance().ClosingWindows();
+                    WindowSaveLoader.getInstance().closingWindows();
                 }
             }
         });
@@ -97,7 +94,10 @@ public class MainApplicationFrame extends JFrame implements SaveLoadWindow
         Logger.debug("Протокол логирования работает");
         addWindow(logWindow);
 
-        GameWindow gameWindow = new GameWindow();
+        GameStatesWindow gameStatesWindow = new GameStatesWindow();
+        addWindow(gameStatesWindow);
+
+        GameWindow gameWindow = new GameWindow(gameStatesWindow);
 
         addWindow(gameWindow);
     }
