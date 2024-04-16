@@ -30,12 +30,16 @@ public class MainApplicationFrame extends JFrame implements SaveLoadWindow
 
     public final String FrameName = "MainFrame";
 
+    final Object[]  YES_NO_OPTION_RUS = {
+            "Да", "Нет"
+    };
+
     public MainApplicationFrame() {
 
         //Make the big window be indented 50 pixels from each edge
         //of the screen. {"LogWindow":null,"MainFrame":{"pos_x":603,"pos_y":76,"is_hidden":false,"width":779,"height":800}}
-        SingletonWindow.getInstance().ConnectToSingleton(this, this.FrameName);
-        WindowData windowData = SingletonWindow.getInstance().loadData(this.FrameName);
+        WindowSaveLoader.getInstance().connect(this, this.FrameName);
+        WindowData windowData = WindowSaveLoader.getInstance().loadWindowStates(this.FrameName);
         int inset = 50;
         this.setVisible(true);
         this.setMinimumSize(new Dimension(500,400));
@@ -47,6 +51,7 @@ public class MainApplicationFrame extends JFrame implements SaveLoadWindow
                 screenSize.height/ - inset*2);
             this.setExtendedState(Frame.MAXIMIZED_BOTH);
         } else {
+            System.out.println(' '+windowData.pos_x+" "+windowData.pos_y);
             this.setLocation(windowData.pos_x, windowData.pos_y);
             this.setSize(windowData.width,windowData.height);
             if (windowData.is_hidden)
@@ -83,24 +88,20 @@ public class MainApplicationFrame extends JFrame implements SaveLoadWindow
         });
     }
 
+
+    /**
+     * Открытие внутренних окон.
+     */
     private void InitSubWindows(){
-        LogWindow logWindow = createLogWindow();
+        LogWindow logWindow =  new LogWindow(Logger.getDefaultLogSource());
+        Logger.debug("Протокол логирования работает");
         addWindow(logWindow);
 
-        GameStatesWindow gameStatesWindow = new GameStatesWindow();
-        addWindow(gameStatesWindow);
+        GameWindow gameWindow = new GameWindow();
 
-        GameWindow gameWindow = new GameWindow(gameStatesWindow);
         addWindow(gameWindow);
-
     }
 
-    protected LogWindow createLogWindow() {
-        LogWindow logWindow = new LogWindow(Logger.getDefaultLogSource());
-
-        Logger.debug("Протокол работает");
-        return logWindow;
-    }
 
     protected void addWindow(JInternalFrame frame) {
         desktopPane.add(frame);
@@ -204,13 +205,9 @@ public class MainApplicationFrame extends JFrame implements SaveLoadWindow
 
     @Override
     public WindowData Save() {
-        WindowData windowData = new WindowData();
-        windowData.is_hidden = this.getState() == 1;
-        windowData.pos_x = Math.max(this.getX(), 0);
-        windowData.pos_y = Math.max(this.getY(), 0);
-        windowData.width = Math.max(this.getWidth(), 0);
-        windowData.height = Math.max(this.getHeight(), 0);
-        return windowData;
+        WindowData data = GetStateForComponent.get(this);
+        data.is_hidden = this.getState() == Frame.ICONIFIED ? true: false;
+        return data;
     }
 
 }

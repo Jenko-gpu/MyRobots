@@ -4,7 +4,7 @@ import java.awt.*;
 import java.beans.PropertyVetoException;
 import javax.swing.*;
 
-public class GameWindow extends JInternalFrame implements SaveLoadWindow {
+public class GameWindow extends JInternalFrame implements SaveLoadableWindow {
     private final GameVisualizer m_visualizer;
     private final String FrameName = "GameWindow";
 
@@ -13,8 +13,8 @@ public class GameWindow extends JInternalFrame implements SaveLoadWindow {
     public GameWindow(GameStateObserver observer)
     {
         super("Игровое поле", true, true, true, true);
-        SingletonWindow.getInstance().ConnectToSingleton(this, this.FrameName);
-        WindowData windowData = SingletonWindow.getInstance().loadData(FrameName);
+        WindowSaveLoader.getInstance().connect(this, this.FrameName);
+        WindowData windowData = WindowSaveLoader.getInstance().loadWindowStates(FrameName);
         if (windowData == null){
             this.setSize(400, 500);
             this.setLocation(15, 15);
@@ -25,27 +25,22 @@ public class GameWindow extends JInternalFrame implements SaveLoadWindow {
             try {
                 this.setIcon(windowData.is_hidden);
             } catch (PropertyVetoException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
         }
 
-        m_visualizer = new GameVisualizer(new RobotModel(observer));
+        m_visualizer = new GameVisualizer();
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(m_visualizer);
         getContentPane().add(panel);
-
 
     }
 
     @Override
     public WindowData Save() {
-        WindowData windowData = new WindowData();
-        windowData.is_hidden = this.isIcon();
-        windowData.pos_x = Math.max(this.getX(), 0);
-        windowData.pos_y = Math.max(this.getY(), 0);
-        windowData.width = Math.max(this.getWidth(), 0);
-        windowData.height = Math.max(this.getHeight(), 0);
-        return windowData;
+        WindowData data = GetStateForComponent.get(this);
+        data.is_hidden = this.isIcon;
+        return data;
     }
 
 

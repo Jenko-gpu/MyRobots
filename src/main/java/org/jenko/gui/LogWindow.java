@@ -10,7 +10,7 @@ import org.jenko.log.LogChangeListener;
 import org.jenko.log.LogEntry;
 import org.jenko.log.LogWindowSource;
 
-public class LogWindow extends JInternalFrame implements LogChangeListener, SaveLoadWindow
+public class LogWindow extends JInternalFrame implements LogChangeListener, SaveLoadableWindow
 {
     private LogWindowSource m_logSource;
     private TextArea m_logContent;
@@ -21,8 +21,8 @@ public class LogWindow extends JInternalFrame implements LogChangeListener, Save
     {
         super("Протокол работы", true, true, true, true);
 
-        SingletonWindow.getInstance().ConnectToSingleton(this, this.FrameName);
-        WindowData windowData = SingletonWindow.getInstance().loadData(FrameName);
+        WindowSaveLoader.getInstance().connect(this, this.FrameName);
+        WindowData windowData = WindowSaveLoader.getInstance().loadWindowStates(FrameName);
 
         Dimension dimension = new Dimension(300,700);
 
@@ -38,7 +38,7 @@ public class LogWindow extends JInternalFrame implements LogChangeListener, Save
             try {
                 this.setIcon(windowData.is_hidden);
             } catch (PropertyVetoException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
         }
         m_logSource = logSource;
@@ -70,13 +70,9 @@ public class LogWindow extends JInternalFrame implements LogChangeListener, Save
 
     @Override
     public WindowData Save() {
-        WindowData windowData = new WindowData();
-        windowData.is_hidden = this.isIcon();
-        windowData.pos_x = this.getX() > 0? this.getX() : 0;
-        windowData.pos_y =this.getY() > 0? this.getY() : 0;
-        windowData.width = this.getWidth() > 0? this.getWidth() : 0;
-        windowData.height = this.getHeight() > 0 ? this.getHeight(): 0;
-        return windowData;
+        WindowData data = GetStateForComponent.get(this);
+        data.is_hidden = this.isIcon;
+        return data;
     }
 
 
