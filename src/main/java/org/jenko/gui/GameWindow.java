@@ -25,6 +25,7 @@ public class GameWindow extends JInternalFrame implements SaveLoadableWindow {
             try {
                 this.setIcon(windowData.is_hidden);
             } catch (PropertyVetoException e) {
+                System.err.println("Ошибка при восстановлении hidden окна " + FrameName);
                 e.printStackTrace();
             }
         }

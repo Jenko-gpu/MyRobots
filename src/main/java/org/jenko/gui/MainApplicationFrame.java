@@ -51,7 +51,7 @@ public class MainApplicationFrame extends JFrame implements SaveLoadableWindow
                 screenSize.height/ - inset*2);
             this.setExtendedState(Frame.MAXIMIZED_BOTH);
         } else {
-            System.out.println(' '+windowData.pos_x+" "+windowData.pos_y);
+
             this.setLocation(windowData.pos_x, windowData.pos_y);
             this.setSize(windowData.width,windowData.height);
             if (windowData.is_hidden)
