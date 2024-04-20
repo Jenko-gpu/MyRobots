@@ -24,7 +24,7 @@ public class LogWindow extends JInternalFrame implements LogChangeListener, Save
         WindowSaveLoader.getInstance().connect(this, this.FrameName);
         WindowData windowData = WindowSaveLoader.getInstance().loadWindowStates(FrameName);
 
-        Dimension dimension = new Dimension(300,700);
+        Dimension dimension = new Dimension(200,400);
 
         if (windowData == null) {
 
