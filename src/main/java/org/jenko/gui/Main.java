@@ -1,6 +1,5 @@
 package org.jenko.gui;
 
-import java.awt.Frame;
 
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -15,6 +14,7 @@ public class  Main
 //        UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
       } catch (Exception e) {
         e.printStackTrace();
+        System.err.println("Ошибка при установки LookAndFeel");
       }
       SwingUtilities.invokeLater(() -> {
         MainApplicationFrame frame = new MainApplicationFrame();

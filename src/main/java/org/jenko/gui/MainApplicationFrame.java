@@ -39,7 +39,7 @@ public class MainApplicationFrame extends JFrame implements SaveLoadableWindow
         //Make the big window be indented 50 pixels from each edge
         //of the screen. {"LogWindow":null,"MainFrame":{"pos_x":603,"pos_y":76,"is_hidden":false,"width":779,"height":800}}
         WindowSaveLoader.getInstance().connect(this, this.FrameName);
-        WindowData windowData = WindowSaveLoader.getInstance().loadWindowStates(this.FrameName);
+        WindowData windowData = WindowSaveLoader.getInstance().loadWindowState(this.FrameName);
         int inset = 50;
         this.setVisible(true);
         this.setMinimumSize(new Dimension(500,400));
@@ -51,12 +51,14 @@ public class MainApplicationFrame extends JFrame implements SaveLoadableWindow
                 screenSize.height/ - inset*2);
             this.setExtendedState(Frame.MAXIMIZED_BOTH);
         } else {
-            System.out.println(' '+windowData.pos_x+" "+windowData.pos_y);
-            this.setLocation(windowData.pos_x, windowData.pos_y);
-            this.setSize(windowData.width,windowData.height);
-            if (windowData.is_hidden)
-            this.setState(Frame.ICONIFIED);
-            else this.setState(Frame.NORMAL);
+            try {
+                UtilForComponent.setStatesForComponent(this, windowData);
+            }
+            catch (Exception e){
+                e.printStackTrace();
+                System.err.println("Не предвиденная ошибка");
+            }
+
         }
         setContentPane(desktopPane);
         setJMenuBar(generateMenuBar());
@@ -79,9 +81,8 @@ public class MainApplicationFrame extends JFrame implements SaveLoadableWindow
                         JOptionPane.QUESTION_MESSAGE, null, YES_NO_OPTION_RUS, YES_NO_OPTION_RUS[1]);
                 if (result == JOptionPane.YES_OPTION){
                     System.out.println("Program is closing");
-
-                    // Передаём сигнал синглтону о том, что приложение нужно закрыть и сохранить
-                    WindowSaveLoader.getInstance().closingWindows();
+                    WindowSaveLoader.getInstance().saveAllWidows();
+                    System.exit(0);
                 }
             }
         });
@@ -204,9 +205,7 @@ public class MainApplicationFrame extends JFrame implements SaveLoadableWindow
 
     @Override
     public WindowData Save() {
-        WindowData data = GetStateForComponent.get(this);
-        data.is_hidden = this.getState() == Frame.ICONIFIED ? true: false;
-        return data;
+        return UtilForComponent.getStateForComponent(this);
     }
 
 }

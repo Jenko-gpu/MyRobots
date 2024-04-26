@@ -28,5 +28,5 @@ replay_pid*
 .idea
 
 robots.config
-MyRobots.iml
+*.iml
 
