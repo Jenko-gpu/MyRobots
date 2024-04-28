@@ -22,24 +22,22 @@ public class LogWindow extends JInternalFrame implements LogChangeListener, Save
         super("Протокол работы", true, true, true, true);
 
         WindowSaveLoader.getInstance().connect(this, this.FrameName);
-        WindowData windowData = WindowSaveLoader.getInstance().loadWindowStates(FrameName);
+        WindowData windowData = WindowSaveLoader.getInstance().loadWindowState(FrameName);
 
         Dimension dimension = new Dimension(200,400);
 
         if (windowData == null) {
-
             this.setLocation(10,10);
             this.setSize(dimension);
             setMinimumSize(dimension);
         }
         else{
-            this.setLocation(windowData.pos_x,windowData.pos_y);
-            this.setSize(windowData.width,windowData.height);
             try {
-                this.setIcon(windowData.is_hidden);
+                UtilForComponent.setStatesForComponent(this, windowData);
             } catch (PropertyVetoException e) {
                 System.err.println("Ошибка при восстановлении hidden окна " + FrameName);
                 e.printStackTrace();
+                System.err.println("Ошибка установки состояния iconified для " + this.FrameName);
             }
         }
         m_logSource = logSource;
@@ -71,9 +69,7 @@ public class LogWindow extends JInternalFrame implements LogChangeListener, Save
 
     @Override
     public WindowData Save() {
-        WindowData data = GetStateForComponent.get(this);
-        data.is_hidden = this.isIcon;
-        return data;
+        return UtilForComponent.getStateForComponent(this);
     }
 
 

@@ -4,15 +4,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Синглтон для сохранения и загрузки данных окон.
+ * Класс для сохранения и загрузки данных окон
  */
 public final class WindowSaveLoader {
-    private static WindowSaveLoader uniqInstance;
+    private static final WindowSaveLoader instance = new WindowSaveLoader();
 
     /**
      * Загруженные данные окон
      */
-    private Map<String,WindowData> data;
+    private final Map<String,WindowData> data;
 
 
     /**
@@ -26,40 +26,35 @@ public final class WindowSaveLoader {
         data = fileGetter.get();
     }
     public static WindowSaveLoader getInstance() {
-        if (uniqInstance == null){
-            uniqInstance = new WindowSaveLoader();
-
-        }
-        return uniqInstance;
+        return instance;
     }
 
     /**
      * Загрузить состояния конкретного окна
      * @return WindowData, если есть, иначе null
      */
-    public WindowData loadWindowStates(String window_name)
+    public WindowData loadWindowState(String window_name)
     {
         return data.get(window_name);
 
     }
 
     /**
-     * Соединить окно для последующих сохранений
+     * Зарегистрировать окно в классе
      */
     public void connect(SaveLoadableWindow frame, String name){
         frames.put(name, frame);
     }
 
     /**
-     * Сохранить состояния окон и закрыть приложение
+     * Сохранить состояния окон
      */
-    public void closingWindows(){
+    public void saveAllWidows(){
         for (Map.Entry<String, SaveLoadableWindow> pair : frames.entrySet()){
             WindowData windowData = pair.getValue().Save();
             data.put(pair.getKey(), windowData);
         }
         fileGetter.send(data);
-        System.exit(0);
     }
 
 }

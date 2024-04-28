@@ -14,19 +14,18 @@ public class GameWindow extends JInternalFrame implements SaveLoadableWindow {
     {
         super("Игровое поле", true, true, true, true);
         WindowSaveLoader.getInstance().connect(this, this.FrameName);
-        WindowData windowData = WindowSaveLoader.getInstance().loadWindowStates(FrameName);
+        WindowData windowData = WindowSaveLoader.getInstance().loadWindowState(FrameName);
         if (windowData == null){
             this.setSize(400, 500);
             this.setLocation(15, 15);
             setMinimumSize(this.getSize());
         } else{
-            this.setLocation(windowData.pos_x, windowData.pos_y);
-            this.setSize(windowData.width, windowData.height);
             try {
-                this.setIcon(windowData.is_hidden);
+                UtilForComponent.setStatesForComponent(this, windowData);
             } catch (PropertyVetoException e) {
                 System.err.println("Ошибка при восстановлении hidden окна " + FrameName);
                 e.printStackTrace();
+                System.err.println("Ошибка установки состояния iconified для " + this.FrameName);
             }
         }
 
@@ -40,9 +39,7 @@ public class GameWindow extends JInternalFrame implements SaveLoadableWindow {
 
     @Override
     public WindowData Save() {
-        WindowData data = GetStateForComponent.get(this);
-        data.is_hidden = this.isIcon;
-        return data;
+        return UtilForComponent.getStateForComponent(this);
     }
 
 

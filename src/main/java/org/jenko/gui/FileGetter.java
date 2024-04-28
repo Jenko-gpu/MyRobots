@@ -18,13 +18,12 @@ import org.codehaus.jackson.type.TypeReference;
  */
 public class FileGetter{
 
-    private String curpath;
-    private String filename;
+    private final String filename;
 
     private File file;
 
     FileGetter(){
-        curpath = System.getProperty("user.home") + "\\MyRobotsConf";
+        String curpath = System.getProperty("user.home") + "\\MyRobotsConf";
         filename = curpath + "\\robots.config";
         File dir = new File(curpath);
         if (!dir.exists()){
@@ -37,6 +36,7 @@ public class FileGetter{
             }
         } catch (IOException e) {
             e.printStackTrace();
+            System.err.println("Ошибка при создании файла конфига");
         }
 
     }
@@ -52,7 +52,6 @@ public class FileGetter{
                 BufferedReader reader = new BufferedReader(fileReader)
         ) {
             String raw_data = reader.readLine();
-            reader.close();
             if (raw_data == null){
                 return new HashMap<String, WindowData>();
             }
@@ -62,23 +61,16 @@ public class FileGetter{
             };
 
             return mapper.readValue(raw_data, typeRef);
-            /*
-            Map<String, MyData> map = new HashMap<String, MyData>();
-            for (MyData el: mydata){
-                map.put(el.name,el);
-            }
-            return map;
-            */
 
         }catch (Exception e){
             e.printStackTrace();
+            System.err.println("Ошибка при чтении данных из файла конфига");
         }
         return new HashMap<String, WindowData>();
     }
 
     /**
      * Сохранить данные окон
-     * @param data
      */
     public void send(Map<String,WindowData> data) {
         ObjectMapper mapper = new ObjectMapper().configure( SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS,false);
@@ -87,6 +79,7 @@ public class FileGetter{
 
         } catch (IOException e) {
             e.printStackTrace();
+            System.err.println("Ошибка при записи в файл конфига");
         }
 
     }
