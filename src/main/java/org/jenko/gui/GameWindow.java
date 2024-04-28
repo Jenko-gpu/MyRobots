@@ -33,9 +33,12 @@ public class GameWindow extends JInternalFrame implements SaveLoadableWindow {
         }
         RobotModel robotModel = new RobotModel();
         RobotsController robotsController = new RobotsController(robotModel);
+
         m_visualizer = new GameVisualizer();
+
         robotsController.addListener(m_visualizer);
         robotsController.addListener(stateWindow);
+
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(m_visualizer);
         getContentPane().add(panel);
@@ -46,9 +49,9 @@ public class GameWindow extends JInternalFrame implements SaveLoadableWindow {
             public void mouseClicked(MouseEvent e)
             {
                 Point point = e.getPoint();
-                point.setLocation(point.x - 5, point.y - 25); // Нормализация точки (вычитаю размеры границ)
+                point.setLocation(point.x - 6, point.y - 25); // Нормализация точки (вычитаю примерные размеры границ)
                 robotsController.setTarget(point);
-                repaint();
+
             }
         });
 
