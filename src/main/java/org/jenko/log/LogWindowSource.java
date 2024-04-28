@@ -1,7 +1,9 @@
 package org.jenko.log;
 
+import org.jenko.log.structures.LogHolder;
+
 import java.util.ArrayList;
-import java.util.Collections;
+
 
 /**
  * Что починить:
@@ -14,16 +16,16 @@ import java.util.Collections;
  */
 public class LogWindowSource
 {
-    private int m_iQueueLength;
+    private final int m_iQueueLength;
     
-    private ArrayList<LogEntry> m_messages;
+    private final LogHolder<LogEntry> m_messages;
     private final ArrayList<LogChangeListener> m_listeners;
     private volatile LogChangeListener[] m_activeListeners;
     
     public LogWindowSource(int iQueueLength) 
     {
         m_iQueueLength = iQueueLength;
-        m_messages = new ArrayList<LogEntry>(iQueueLength);
+        m_messages = new LogHolder<>(iQueueLength);
         m_listeners = new ArrayList<LogChangeListener>();
     }
     
@@ -69,21 +71,23 @@ public class LogWindowSource
     
     public int size()
     {
-        return m_messages.size();
+        return m_messages.getCurLen();
     }
 
     public Iterable<LogEntry> range(int startFrom, int count)
     {
-        if (startFrom < 0 || startFrom >= m_messages.size())
+        if (startFrom < 0 || startFrom >= m_messages.getCurLen())
         {
-            return Collections.emptyList();
+            return new LogHolder<LogEntry>(m_iQueueLength);
         }
-        int indexTo = Math.min(startFrom + count, m_messages.size());
-        return m_messages.subList(startFrom, indexTo);
+        int indexTo = Math.min(startFrom + count, m_messages.getCurLen());
+        return m_messages.getSlice(startFrom, indexTo);
     }
 
     public Iterable<LogEntry> all()
     {
         return m_messages;
     }
+
+
 }
