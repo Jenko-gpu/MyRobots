@@ -1,6 +1,9 @@
 package org.jenko.gui;
 
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import javax.swing.*;
 
@@ -10,7 +13,7 @@ public class GameWindow extends JInternalFrame implements SaveLoadableWindow {
 
 
 
-    public GameWindow(GameStateObserver observer)
+    public GameWindow(PropertyChangeListener stateWindow)
     {
         super("Игровое поле", true, true, true, true);
         WindowSaveLoader.getInstance().connect(this, this.FrameName);
@@ -28,12 +31,26 @@ public class GameWindow extends JInternalFrame implements SaveLoadableWindow {
                 System.err.println("Ошибка установки состояния iconified для " + this.FrameName);
             }
         }
-
-        RobotModel robotModel = new RobotModel(observer);
-        m_visualizer = new GameVisualizer(robotModel);
+        RobotModel robotModel = new RobotModel();
+        RobotsController robotsController = new RobotsController(robotModel);
+        m_visualizer = new GameVisualizer();
+        robotsController.addListener(m_visualizer);
+        robotsController.addListener(stateWindow);
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(m_visualizer);
         getContentPane().add(panel);
+
+        addMouseListener(new MouseAdapter()
+        {
+            @Override
+            public void mouseClicked(MouseEvent e)
+            {
+                Point point = e.getPoint();
+                point.setLocation(point.x - 5, point.y - 25); // Нормализация точки (вычитаю размеры границ)
+                robotsController.setTarget(point);
+                repaint();
+            }
+        });
 
     }
 

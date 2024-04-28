@@ -2,14 +2,16 @@ package org.jenko.gui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 
 /**
  * Окно показывающее координаты робота
  */
-public class GameStatesWindow extends JInternalFrame implements GameStateObserver, SaveLoadableWindow {
-    private JLabel displayPos;
-    private JLabel displayAngle;
+public class GameStatesWindow extends JInternalFrame implements PropertyChangeListener, SaveLoadableWindow {
+    private final JLabel displayPos;
+    private final JLabel displayAngle;
 
     public final String FrameName = "GameStates";
     public GameStatesWindow()
@@ -17,12 +19,17 @@ public class GameStatesWindow extends JInternalFrame implements GameStateObserve
         super("Информация об игре", false, false, false, false);
 
         WindowSaveLoader.getInstance().connect(this,FrameName);
-        WindowData windowData = WindowSaveLoader.getInstance().loadWindowStates(FrameName);
+        WindowData windowData = WindowSaveLoader.getInstance().loadWindowState(FrameName);
         this.setSize(250, 70);
         if (windowData == null) {
             this.setLocation(50, 50);
         } else {
-            this.setLocation(windowData.pos_x,windowData.pos_y);
+            try {
+                UtilForComponent.setStatesForComponent(this, windowData);
+            } catch (PropertyVetoException e) {
+                e.printStackTrace();
+                System.err.println("Ошибка при попытке восстановить iconified " + FrameName);
+            }
         }
         setLayout(new BorderLayout());
 
@@ -38,16 +45,18 @@ public class GameStatesWindow extends JInternalFrame implements GameStateObserve
 
 
 
-    @Override
-    public <R,T,M extends Number> void gameStateHasChanged(R x, T y, M angle) {
 
-        displayPos.setText("Робот на координате "+ x +":"+ y);
-        displayAngle.setText("Угол робота: "+ angle);
-    }
 
     @Override
     public WindowData Save() {
-        WindowData windowData = GetStateForComponent.get(this);
+        WindowData windowData = UtilForComponent.getStateForComponent(this);
         return windowData;
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        RobotModel robot = (RobotModel) evt.getNewValue();
+        displayPos.setText("Робот на координате "+ (int) robot.m_PositionX +":"+ (int) robot.m_PositionY);
+        displayAngle.setText("Угол робота: "+ robot.m_Direction);
     }
 }

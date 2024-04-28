@@ -8,21 +8,21 @@ import java.awt.*;
  */
 public class RobotModel {
 
-    volatile double m_PositionX = 100;
-    volatile double m_PositionY = 100;
-    volatile double m_Direction = 0;
+    volatile public double m_PositionX = 100;
+    volatile public double m_PositionY = 100;
+    volatile public double m_Direction = 0;
 
-    volatile int m_targetPositionX = 150;
-    volatile int m_targetPositionY = 100;
+    volatile public int m_targetPositionX = 150;
+    volatile public int m_targetPositionY = 100;
 
-    static final double maxVelocity = 0.1;
-    static final double maxAngularVelocity = 0.001;
+    static public final double maxVelocity = 0.1;
+    static public final double maxAngularVelocity = 0.001;
 
-    private GameStateObserver observer;
 
-    RobotModel(GameStateObserver observer){
-        this.observer = observer;
+    RobotModel() {
     }
+
+
 
 
     private static double distance(double x1, double y1, double x2, double y2)
@@ -48,10 +48,7 @@ public class RobotModel {
             return max;
         return value;
     }
-    private static int round(double value)
-    {
-        return (int)(value + 0.5);
-    }
+
 
     /**
      * Выполнить задачу робота
@@ -89,10 +86,6 @@ public class RobotModel {
         }
 
         moveRobot(velocity, angularVelocity, 10);
-        observer.gameStateHasChanged(round(m_PositionX), round(m_PositionY), VisualAngle());
-    }
-    public double VisualAngle(){
-        return (360 - m_Direction*180/Math.PI);
     }
 
     /**
