@@ -42,6 +42,7 @@ public class LogWindowSource
     {
         synchronized(m_listeners)
         {
+
             m_listeners.remove(listener);
             m_activeListeners = null;
         }
@@ -51,16 +52,16 @@ public class LogWindowSource
     {
         LogEntry entry = new LogEntry(logLevel, strMessage);
         m_messages.add(entry);
-        LogChangeListener [] activeListeners = m_activeListeners;
-        if (activeListeners == null)
+        LogChangeListener [] activeListeners;
+
+        synchronized (m_listeners)
         {
-            synchronized (m_listeners)
+            if (m_activeListeners == null)
             {
-                if (m_activeListeners == null)
-                {
-                    activeListeners = m_listeners.toArray(new LogChangeListener [0]);
-                    m_activeListeners = activeListeners;
-                }
+                activeListeners = m_listeners.toArray(new LogChangeListener [0]);
+                m_activeListeners = activeListeners;
+            } else{
+                activeListeners = m_activeListeners;
             }
         }
         for (LogChangeListener listener : activeListeners)
