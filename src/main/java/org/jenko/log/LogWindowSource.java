@@ -42,7 +42,6 @@ public class LogWindowSource
     {
         synchronized(m_listeners)
         {
-
             m_listeners.remove(listener);
             m_activeListeners = null;
         }
@@ -72,17 +71,17 @@ public class LogWindowSource
     
     public int size()
     {
-        return m_messages.getCurLen();
+        return m_messages.size();
     }
 
     public Iterable<LogEntry> range(int startFrom, int count)
     {
-        if (startFrom < 0 || startFrom >= m_messages.getCurLen())
+        if (startFrom < 0 || startFrom >= m_messages.size())
         {
             return new LogHolder(m_iQueueLength);
         }
-        int indexTo = Math.min(startFrom + count, m_messages.getCurLen());
-        return m_messages.getSlice(startFrom, indexTo);
+        int indexTo = Math.min(startFrom + count, m_messages.size());
+        return m_messages.subList(startFrom, indexTo);
     }
 
     public Iterable<LogEntry> all()

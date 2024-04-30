@@ -5,14 +5,17 @@ import org.jenko.log.LogEntry;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+
+/**
+ * Итератор для LogHolder
+ *
+ */
 public class LogHolderIterator implements Iterator<LogEntry> {
 
 
 
     private LogHolder logHolder;
     private Node curNode;
-
-    final Object lock;
 
     @Override
     public boolean hasNext() {
