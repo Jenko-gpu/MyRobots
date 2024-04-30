@@ -24,19 +24,42 @@ import org.jenko.log.Logger;
  * Следует разделить его на серию более простых методов (или вообще выделить отдельный класс).
  *
  */
-public class MainApplicationFrame extends JFrame implements SaveLoadWindow
+public class MainApplicationFrame extends JFrame implements SaveLoadableWindow
 {
     private final JDesktopPane desktopPane = new JDesktopPane();
 
-    public MainApplicationFrame() {
-        //Make the big window be indented 50 pixels from each edge
-        //of the screen.
-        int inset = 50;
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        setBounds(inset, inset,
-            screenSize.width/ - inset*2,
-            screenSize.height/ - inset*2);
+    public final String FrameName = "MainFrame";
 
+    final Object[]  YES_NO_OPTION_RUS = {
+            "Да", "Нет"
+    };
+
+    public MainApplicationFrame() {
+
+        //Make the big window be indented 50 pixels from each edge
+        //of the screen. {"LogWindow":null,"MainFrame":{"pos_x":603,"pos_y":76,"is_hidden":false,"width":779,"height":800}}
+        WindowSaveLoader.getInstance().connect(this, this.FrameName);
+        WindowData windowData = WindowSaveLoader.getInstance().loadWindowState(this.FrameName);
+        int inset = 50;
+        this.setVisible(true);
+        this.setMinimumSize(new Dimension(500,400));
+        if (windowData == null){
+
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            setBounds(inset, inset,
+                screenSize.width/ - inset*2,
+                screenSize.height/ - inset*2);
+            this.setExtendedState(Frame.MAXIMIZED_BOTH);
+        } else {
+            try {
+                UtilForComponent.setStatesForComponent(this, windowData);
+            }
+            catch (Exception e){
+                e.printStackTrace();
+                System.err.println("Не предвиденная ошибка");
+            }
+
+        }
         setContentPane(desktopPane);
         setJMenuBar(generateMenuBar());
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -50,9 +73,6 @@ public class MainApplicationFrame extends JFrame implements SaveLoadWindow
     private void InitListeners(){
         addWindowListener(new java.awt.event.WindowAdapter() {
 
-            final Object[]  YES_NO_OPTION_RUS = {
-                    "Да", "Нет"
-            };
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
                 int result  = JOptionPane.showOptionDialog(getParent(),
@@ -61,32 +81,27 @@ public class MainApplicationFrame extends JFrame implements SaveLoadWindow
                         JOptionPane.QUESTION_MESSAGE, null, YES_NO_OPTION_RUS, YES_NO_OPTION_RUS[1]);
                 if (result == JOptionPane.YES_OPTION){
                     System.out.println("Program is closing");
-                    //Save();
+                    WindowSaveLoader.getInstance().saveAllWidows();
                     System.exit(0);
-
                 }
             }
         });
     }
 
+
+    /**
+     * Открытие внутренних окон.
+     */
     private void InitSubWindows(){
-        LogWindow logWindow = createLogWindow();
+        LogWindow logWindow =  new LogWindow(Logger.getDefaultLogSource());
+        Logger.debug("Протокол логирования работает");
         addWindow(logWindow);
 
         GameWindow gameWindow = new GameWindow();
-        gameWindow.setSize(400,  400);
+
         addWindow(gameWindow);
     }
 
-    protected LogWindow createLogWindow() {
-        LogWindow logWindow = new LogWindow(Logger.getDefaultLogSource());
-        logWindow.setLocation(10,10);
-        logWindow.setSize(300, 800);
-        setMinimumSize(logWindow.getSize());
-        logWindow.pack();
-        Logger.debug("Протокол работает");
-        return logWindow;
-    }
 
     protected void addWindow(JInternalFrame frame) {
         desktopPane.add(frame);
@@ -162,15 +177,12 @@ public class MainApplicationFrame extends JFrame implements SaveLoadWindow
         }
 
 
-
         JMenuItem quitItem = new JMenuItem("Выйти из приложения", KeyEvent.VK_X);
             quitItem.addActionListener((event) -> {
             Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(
                     new WindowEvent(this, WindowEvent.WINDOW_CLOSING)
             );
         });
-
-
 
         menuBar.add(lookAndFeelMenu);
         menuBar.add(testMenu);
@@ -192,12 +204,8 @@ public class MainApplicationFrame extends JFrame implements SaveLoadWindow
     }
 
     @Override
-    public void Save() {
-
+    public WindowData Save() {
+        return UtilForComponent.getStateForComponent(this);
     }
 
-    @Override
-    public void Load(WindowData data) {
-
-    }
 }

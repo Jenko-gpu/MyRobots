@@ -1,8 +1,7 @@
 package org.jenko.gui;
 
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
-import java.awt.TextArea;
+import java.awt.*;
+import java.beans.PropertyVetoException;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
@@ -11,23 +10,42 @@ import org.jenko.log.LogChangeListener;
 import org.jenko.log.LogEntry;
 import org.jenko.log.LogWindowSource;
 
-public class LogWindow extends JInternalFrame implements LogChangeListener, SaveLoadWindow
+public class LogWindow extends JInternalFrame implements LogChangeListener, SaveLoadableWindow
 {
     private LogWindowSource m_logSource;
     private TextArea m_logContent;
 
-    public LogWindow(LogWindowSource logSource) 
+    public final String FrameName = "LogWindow";
+
+    public LogWindow(LogWindowSource logSource)
     {
         super("Протокол работы", true, true, true, true);
+
+        WindowSaveLoader.getInstance().connect(this, this.FrameName);
+        WindowData windowData = WindowSaveLoader.getInstance().loadWindowState(FrameName);
+
+        Dimension dimension = new Dimension(200,400);
+
+        if (windowData == null) {
+            this.setLocation(10,10);
+            this.setSize(dimension);
+            setMinimumSize(dimension);
+        }
+        else{
+            try {
+                UtilForComponent.setStatesForComponent(this, windowData);
+            } catch (PropertyVetoException e) {
+                e.printStackTrace();
+                System.err.println("Ошибка установки состояния iconified для " + this.FrameName);
+            }
+        }
         m_logSource = logSource;
         m_logSource.registerListener(this);
         m_logContent = new TextArea("");
         m_logContent.setSize(200, 500);
-        
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(m_logContent, BorderLayout.CENTER);
         getContentPane().add(panel);
-        pack();
         updateLogContent();
     }
 
@@ -49,12 +67,9 @@ public class LogWindow extends JInternalFrame implements LogChangeListener, Save
     }
 
     @Override
-    public void Save() {
-
+    public WindowData Save() {
+        return UtilForComponent.getStateForComponent(this);
     }
 
-    @Override
-    public void Load(WindowData data) {
 
-    }
 }
