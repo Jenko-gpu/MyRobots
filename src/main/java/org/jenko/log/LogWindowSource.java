@@ -1,7 +1,9 @@
 package org.jenko.log;
 
+import org.jenko.log.structures.LogHolder;
+
 import java.util.ArrayList;
-import java.util.Collections;
+
 
 /**
  * Что починить:
@@ -14,16 +16,16 @@ import java.util.Collections;
  */
 public class LogWindowSource
 {
-    private int m_iQueueLength;
+    private final int m_iQueueLength;
     
-    private ArrayList<LogEntry> m_messages;
+    private final LogHolder m_messages;
     private final ArrayList<LogChangeListener> m_listeners;
     private volatile LogChangeListener[] m_activeListeners;
     
     public LogWindowSource(int iQueueLength) 
     {
         m_iQueueLength = iQueueLength;
-        m_messages = new ArrayList<LogEntry>(iQueueLength);
+        m_messages = new LogHolder(iQueueLength);
         m_listeners = new ArrayList<LogChangeListener>();
     }
     
@@ -49,16 +51,16 @@ public class LogWindowSource
     {
         LogEntry entry = new LogEntry(logLevel, strMessage);
         m_messages.add(entry);
-        LogChangeListener [] activeListeners = m_activeListeners;
-        if (activeListeners == null)
+        LogChangeListener [] activeListeners;
+
+        synchronized (m_listeners)
         {
-            synchronized (m_listeners)
+            if (m_activeListeners == null)
             {
-                if (m_activeListeners == null)
-                {
-                    activeListeners = m_listeners.toArray(new LogChangeListener [0]);
-                    m_activeListeners = activeListeners;
-                }
+                activeListeners = m_listeners.toArray(new LogChangeListener [0]);
+                m_activeListeners = activeListeners;
+            } else{
+                activeListeners = m_activeListeners;
             }
         }
         for (LogChangeListener listener : activeListeners)
@@ -76,7 +78,7 @@ public class LogWindowSource
     {
         if (startFrom < 0 || startFrom >= m_messages.size())
         {
-            return Collections.emptyList();
+            return new LogHolder(m_iQueueLength);
         }
         int indexTo = Math.min(startFrom + count, m_messages.size());
         return m_messages.subList(startFrom, indexTo);
@@ -86,4 +88,6 @@ public class LogWindowSource
     {
         return m_messages;
     }
+
+
 }

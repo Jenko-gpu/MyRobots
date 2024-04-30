@@ -181,6 +181,13 @@ public class MainApplicationFrame extends JFrame implements SaveLoadableWindow
             testMenu.add(addLogMessageItem);
         }
 
+        {
+            JMenuItem addLogMessageItem = new JMenuItem("Ошибку в лог", KeyEvent.VK_S);
+            addLogMessageItem.addActionListener((event) -> {
+                Logger.error("Ошибка");
+            });
+            testMenu.add(addLogMessageItem);
+        }
 
         JMenuItem quitItem = new JMenuItem("Выйти из приложения", KeyEvent.VK_X);
             quitItem.addActionListener((event) -> {

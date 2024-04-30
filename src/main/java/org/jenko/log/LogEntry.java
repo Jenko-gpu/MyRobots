@@ -10,7 +10,13 @@ public class LogEntry
         m_strMessage = strMessage;
         m_logLevel = logLevel;
     }
-    
+
+    public LogEntry(LogEntry entry)
+    {
+        m_strMessage = entry.m_strMessage;
+        m_logLevel = entry.m_logLevel;
+    }
+
     public String getMessage()
     {
         return m_strMessage;
