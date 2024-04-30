@@ -96,7 +96,11 @@ public class LogHolder implements Iterable<LogEntry> {
 
     @Override
     public Iterator<LogEntry> iterator() {
-        return new LogHolderIterator(this);
+        Iterator<LogEntry> iterator;
+        synchronized (lock){
+            iterator = new LogHolderIterator(this);
+        }
+        return iterator;
     }
 
     Node getHead(){
