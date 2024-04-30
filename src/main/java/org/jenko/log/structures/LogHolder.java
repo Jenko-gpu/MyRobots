@@ -11,11 +11,9 @@ import java.util.List;
  *
  */
 public class LogHolder implements Iterable<LogEntry> {
-    final Object lock = new Object(); // Для самого холдера, так и для его итератора
+    private final Object lock = new Object();
 
-    Node iterHead;
-
-    Node head; // конкретно для пакета
+    private Node head;
     private Node tail;
 
     private final int maxLen;
@@ -33,7 +31,6 @@ public class LogHolder implements Iterable<LogEntry> {
      */
     public void add(LogEntry el){
         synchronized (lock) {
-            if (iterHead != head || head == null) { // Если не догнали итератор или ...
                 if (tail == null) {
                     tail = new Node(el);
                     head = tail;
@@ -48,11 +45,7 @@ public class LogHolder implements Iterable<LogEntry> {
                     head.next = null;
                     head = next;
                 }
-                return;
-            }
-
         }
-        add(el); // Попытаться позже добавить элемент
     }
 
     /**
@@ -60,7 +53,7 @@ public class LogHolder implements Iterable<LogEntry> {
      *
      *
      */
-    public LogHolder getSlice(int start, int finish) {
+    public LogHolder subList(int start, int finish) {
         if (start >= finish) {
             throw new IllegalArgumentException();
         }
@@ -103,12 +96,10 @@ public class LogHolder implements Iterable<LogEntry> {
 
     @Override
     public Iterator<LogEntry> iterator() {
-        try {
-            return new LogHolderIterator(this);
-        } catch (HasAlreadyOpennedIterator e) {
-           e.printStackTrace();
-           System.err.println(e.getMessage());
-        }
-        return new ArrayList<LogEntry>().iterator();
+        return new LogHolderIterator(this);
+    }
+
+    Node getHead(){
+        return head;
     }
 }
