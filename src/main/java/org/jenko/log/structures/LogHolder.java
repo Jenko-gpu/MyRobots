@@ -2,14 +2,12 @@ package org.jenko.log.structures;
 
 import org.jenko.log.LogEntry;
 
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  *  Структура данных основанная на списке. <br>
  *  Имеет максимальный размер. Самоочищаемая (удаляются самые старые) <br>
- *  Поддерживает возможность добавлять элементы во время итерирования.
- *
  *
  */
 public class LogHolder implements Iterable<LogEntry> {
@@ -29,6 +27,10 @@ public class LogHolder implements Iterable<LogEntry> {
         curLen = 0;
     }
 
+    /**
+     * Добавить элемент в коллекцию
+     *
+     */
     public void add(LogEntry el){
         synchronized (lock) {
             if (iterHead != head || head == null) { // Если не догнали итератор или ...
@@ -83,11 +85,18 @@ public class LogHolder implements Iterable<LogEntry> {
         }
     }
 
-
-    public int getCurLen(){
+    /**
+     * Получить текущий размер
+     *
+     */
+    public int size(){
         return curLen;
     }
 
+    /**
+     * Получить максимальный размер
+     *
+     */
     public int getMaxLen(){
         return maxLen;
     }
