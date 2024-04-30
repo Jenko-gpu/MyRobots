@@ -18,14 +18,14 @@ public class LogWindowSource
 {
     private final int m_iQueueLength;
     
-    private final LogHolder<LogEntry> m_messages;
+    private final LogHolder m_messages;
     private final ArrayList<LogChangeListener> m_listeners;
     private volatile LogChangeListener[] m_activeListeners;
     
     public LogWindowSource(int iQueueLength) 
     {
         m_iQueueLength = iQueueLength;
-        m_messages = new LogHolder<>(iQueueLength);
+        m_messages = new LogHolder(iQueueLength);
         m_listeners = new ArrayList<LogChangeListener>();
     }
     
@@ -79,7 +79,7 @@ public class LogWindowSource
     {
         if (startFrom < 0 || startFrom >= m_messages.getCurLen())
         {
-            return new LogHolder<LogEntry>(m_iQueueLength);
+            return new LogHolder(m_iQueueLength);
         }
         int indexTo = Math.min(startFrom + count, m_messages.getCurLen());
         return m_messages.getSlice(startFrom, indexTo);
