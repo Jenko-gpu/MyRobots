@@ -19,14 +19,9 @@ public class LogHolderIterator implements Iterator<LogEntry> {
 
     @Override
     public boolean hasNext() {
-        synchronized (lock) {
-        if (curNode == null) {
-            logHolder.iterHead = null;
-            return false;
-        }
-        return true;
-        }
+        return curNode != null;
     }
+
 
     @Override
     public LogEntry next() throws NoSuchElementException {
@@ -34,28 +29,21 @@ public class LogHolderIterator implements Iterator<LogEntry> {
             throw new NoSuchElementException("Нет элементов больше в Holder");
         }
 
-        synchronized (lock){
-            LogEntry el = curNode.el;
-            curNode = curNode.next;
-            logHolder.iterHead = curNode;
-            return el;
-        }
+        LogEntry el = curNode.el;
+        curNode = curNode.next;
+        return el;
     }
 
 
 
-    LogHolderIterator(LogHolder holder) throws HasAlreadyOpennedIterator {
-
-        lock = holder.lock;
-
-        synchronized (lock){
-            if (holder.iterHead != null){
-                throw new HasAlreadyOpennedIterator("Запрещено создавать более 1 итератора для одного экземпляра Holder");
-            }
-            holder.iterHead = holder.head;
+    LogHolderIterator(LogHolder holder){
+        if (holder.size() == 0){
+            curNode = null;
         }
-        curNode = holder.head;
-        logHolder = holder;
+        else {
+            logHolder = holder.subList(0,holder.size());
+            curNode = holder.getHead();
+        }
     }
 
 }
