@@ -1,5 +1,7 @@
 package org.jenko.log.structures;
 
+import org.jenko.log.LogEntry;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -8,15 +10,15 @@ import java.util.Iterator;
  *  Имеет максимальный размер. Самоочищаемая (удаляются самые старые) <br>
  *  Поддерживает возможность добавлять элементы во время итерирования.
  *
- * @param <T>
+ *
  */
-public class LogHolder<T> implements Iterable<T> {
+public class LogHolder implements Iterable<LogEntry> {
     final Object lock = new Object(); // Для самого холдера, так и для его итератора
 
-    Node<T> iterHead;
+    Node iterHead;
 
-    Node<T> head; // конкретно для пакета
-    private Node<T> tail;
+    Node head; // конкретно для пакета
+    private Node tail;
 
     private final int maxLen;
 
@@ -27,20 +29,20 @@ public class LogHolder<T> implements Iterable<T> {
         curLen = 0;
     }
 
-    public void add(T el){
+    public void add(LogEntry el){
         synchronized (lock) {
             if (iterHead != head || head == null) { // Если не догнали итератор или ...
                 if (tail == null) {
-                    tail = new Node<T>(el);
+                    tail = new Node(el);
                     head = tail;
                 } else {
-                    tail.next = new Node<T>(el);
+                    tail.next = new Node(el);
                     tail = tail.next;
                 }
                 curLen = Math.min(curLen + 1, maxLen + 1);
                 if (curLen > maxLen) {
                     curLen = maxLen;
-                    Node<T> next = head.next;
+                    Node next = head.next;
                     head.next = null;
                     head = next;
                 }
@@ -56,7 +58,7 @@ public class LogHolder<T> implements Iterable<T> {
      *
      *
      */
-    public LogHolder<T> getSlice(int start, int finish) {
+    public LogHolder getSlice(int start, int finish) {
         if (start >= finish) {
             throw new IllegalArgumentException();
         }
@@ -65,8 +67,8 @@ public class LogHolder<T> implements Iterable<T> {
         }
         synchronized (lock) {
             int n = 0;
-            Node<T> cur = head;
-            LogHolder<T> ans = new LogHolder<>(finish - start);
+            Node cur = head;
+            LogHolder ans = new LogHolder(finish - start);
             while (n < start) {
                 cur = cur.next;
                 n++;
@@ -91,13 +93,13 @@ public class LogHolder<T> implements Iterable<T> {
     }
 
     @Override
-    public Iterator<T> iterator() {
+    public Iterator<LogEntry> iterator() {
         try {
-            return new LogHolderIterator<T>(this);
+            return new LogHolderIterator(this);
         } catch (HasAlreadyOpennedIterator e) {
            e.printStackTrace();
            System.err.println(e.getMessage());
         }
-        return new ArrayList<T>().iterator();
+        return new ArrayList<LogEntry>().iterator();
     }
 }

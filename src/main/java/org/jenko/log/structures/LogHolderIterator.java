@@ -1,14 +1,16 @@
 package org.jenko.log.structures;
 
+import org.jenko.log.LogEntry;
+
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class LogHolderIterator<T> implements Iterator<T> {
+public class LogHolderIterator implements Iterator<LogEntry> {
 
 
 
-    private LogHolder<T> logHolder;
-    private Node<T> curNode;
+    private LogHolder logHolder;
+    private Node curNode;
 
     final Object lock;
 
@@ -24,13 +26,13 @@ public class LogHolderIterator<T> implements Iterator<T> {
     }
 
     @Override
-    public T next() throws NoSuchElementException {
+    public LogEntry next() throws NoSuchElementException {
         if (curNode == null){
             throw new NoSuchElementException("Нет элементов больше в Holder");
         }
 
         synchronized (lock){
-            T el = curNode.el;
+            LogEntry el = curNode.el;
             curNode = curNode.next;
             logHolder.iterHead = curNode;
             return el;
@@ -39,7 +41,7 @@ public class LogHolderIterator<T> implements Iterator<T> {
 
 
 
-    LogHolderIterator(LogHolder<T> holder) throws HasAlreadyOpennedIterator {
+    LogHolderIterator(LogHolder holder) throws HasAlreadyOpennedIterator {
 
         lock = holder.lock;
 

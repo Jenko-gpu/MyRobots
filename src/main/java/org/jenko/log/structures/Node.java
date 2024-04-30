@@ -1,9 +1,11 @@
 package org.jenko.log.structures;
 
-class Node<T> {
-    T el;
-    Node<T> next;
-    Node(T t){
-        el = t;
+import org.jenko.log.LogEntry;
+
+class Node {
+    LogEntry el;
+    Node next;
+    Node(LogEntry t){
+        el = new LogEntry(t);
     }
 }
