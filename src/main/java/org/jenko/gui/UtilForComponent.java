@@ -19,13 +19,13 @@ public class UtilForComponent {
      *
      */
     public static void setStatesForComponent(Component frame, WindowData windowData) throws PropertyVetoException {
-        frame.setLocation(windowData.pos_x, windowData.pos_y);
-        frame.setSize(windowData.width,windowData.height);
+        frame.setLocation(windowData.getPos_x(), windowData.getPos_y());
+        frame.setSize(windowData.getWidth(),windowData.getHeight());
         if (frame instanceof JFrame){
-            ((JFrame) frame).setState(windowData.is_hidden ? JFrame.ICONIFIED : JFrame.NORMAL);
+            ((JFrame) frame).setState(windowData.isIs_hidden() ? JFrame.ICONIFIED : JFrame.NORMAL);
         }
         if (frame instanceof JInternalFrame){
-            ((JInternalFrame) frame).setIcon(windowData.is_hidden);
+            ((JInternalFrame) frame).setIcon(windowData.isIs_hidden());
         }
     }
 
