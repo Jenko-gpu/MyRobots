@@ -35,6 +35,7 @@ public class LogWindow extends JInternalFrame implements LogChangeListener, Save
             try {
                 UtilForComponent.setStatesForComponent(this, windowData);
             } catch (PropertyVetoException e) {
+                System.err.println("Ошибка при восстановлении hidden окна " + FrameName);
                 e.printStackTrace();
                 System.err.println("Ошибка установки состояния iconified для " + this.FrameName);
             }
