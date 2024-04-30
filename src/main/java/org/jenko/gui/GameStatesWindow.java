@@ -56,7 +56,7 @@ public class GameStatesWindow extends JInternalFrame implements PropertyChangeLi
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         RobotModel robot = (RobotModel) evt.getNewValue();
-        displayPos.setText("Робот на координате "+ (int) robot.m_PositionX +":"+ (int) robot.m_PositionY);
-        displayAngle.setText("Угол робота: "+ robot.m_Direction);
+        displayPos.setText("Робот на координате "+ (int) robot.getPositionX() +":"+ (int) robot.getPositionY());
+        displayAngle.setText("Угол робота: "+ robot.getDirection());
     }
 }

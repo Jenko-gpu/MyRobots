@@ -36,8 +36,8 @@ public class GameWindow extends JInternalFrame implements SaveLoadableWindow {
 
         m_visualizer = new GameVisualizer();
 
-        robotsController.addListener(m_visualizer);
-        robotsController.addListener(stateWindow);
+        robotModel.addListener(m_visualizer);
+        robotModel.addListener(stateWindow);
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(m_visualizer);

@@ -9,35 +9,27 @@ import java.util.TimerTask;
 
 public class RobotsController {
     public RobotModel robot;
-    private RobotModel emptyRobot;
 
-    private final PropertyChangeSupport support;
-    private final Timer m_timer = initTimer();
 
-    private static Timer initTimer()
-    {
-        return new Timer("events generator", true);
-    }
+
+    private final Timer m_timer = new Timer("events generator", true);
+
 
     RobotsController(RobotModel robot){
         this.robot = robot;
-        emptyRobot = new RobotModel();
-        support = new PropertyChangeSupport(this);
         m_timer.schedule(new TimerTask()
         {
             @Override
             public void run()
             {
                 robot.UpdateRobot();
-                notifyListeners();
             }
         }, 0, 10);
 
     }
 
-    public void addListener(PropertyChangeListener pcl){
-        support.addPropertyChangeListener(pcl);
-    }
+
+
 
     /**
      *  Установить цель для модели робота
@@ -47,9 +39,6 @@ public class RobotsController {
         robot.setTargetPosition(p);
     }
 
-    private void notifyListeners(){
-        support.firePropertyChange("robot", emptyRobot, robot);
-    }
 
 
 }

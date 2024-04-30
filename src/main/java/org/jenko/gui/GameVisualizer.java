@@ -1,16 +1,11 @@
 package org.jenko.gui;
 
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import javax.swing.JPanel;
 
@@ -20,7 +15,8 @@ public class GameVisualizer extends JPanel implements PropertyChangeListener
 {
 
 
-    RobotModel robotModel;
+    private RobotModel robotModel;
+
 
 
     public GameVisualizer()
@@ -43,8 +39,8 @@ public class GameVisualizer extends JPanel implements PropertyChangeListener
     {
         super.paint(g);
         Graphics2D g2d = (Graphics2D)g; 
-        drawRobot(g2d, robotModel.m_Direction);
-        drawTarget(g2d, robotModel.m_targetPositionX, robotModel.m_targetPositionY);
+        drawRobot(g2d, robotModel.getDirection());
+        drawTarget(g2d, robotModel.getTargetPositionX(), robotModel.getTargetPositionY());
 
     }
     
@@ -62,8 +58,8 @@ public class GameVisualizer extends JPanel implements PropertyChangeListener
     {
 
 
-        int robotCenterX = round(robotModel.m_PositionX);
-        int robotCenterY = round(robotModel.m_PositionY);
+        int robotCenterX = round(robotModel.getPositionX());
+        int robotCenterY = round(robotModel.getPositionY());
         AffineTransform t = AffineTransform.getRotateInstance(direction, robotCenterX, robotCenterY); 
         g.setTransform(t);
         g.setColor(Color.MAGENTA);

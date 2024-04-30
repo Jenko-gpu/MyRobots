@@ -1,6 +1,10 @@
 package org.jenko.gui;
 
 import java.awt.*;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.lang.reflect.Array;
+import java.util.Arrays;
 
 /**
  * Модель робота, отвечающая за его движение.
@@ -8,21 +12,35 @@ import java.awt.*;
  */
 public class RobotModel {
 
-    volatile public double m_PositionX = 100;
-    volatile public double m_PositionY = 100;
-    volatile public double m_Direction = 0;
+    private final RobotModel emptyModel = null;
+    volatile private double m_PositionX = 100;
+    volatile private double m_PositionY = 100;
+    volatile private double m_Direction = 0;
 
-    volatile public int m_targetPositionX = 150;
-    volatile public int m_targetPositionY = 100;
+    volatile private int m_targetPositionX = 150;
+    volatile private int m_targetPositionY = 100;
 
     static public final double maxVelocity = 0.1;
     static public final double maxAngularVelocity = 0.001;
 
 
+    private final PropertyChangeSupport support;
+
     RobotModel() {
+        support = new PropertyChangeSupport(this);
+
     }
 
 
+
+    public void addListener(PropertyChangeListener pcl){
+        support.addPropertyChangeListener(pcl);
+    }
+
+
+    private void notifyListeners(){
+        support.firePropertyChange("robot", emptyModel, this);
+    }
 
 
     private static double distance(double x1, double y1, double x2, double y2)
@@ -55,6 +73,7 @@ public class RobotModel {
      */
     public void UpdateRobot()
     {
+
         double distance = distance( m_targetPositionX,  m_targetPositionY,
                  m_PositionX,  m_PositionY);
         if (distance < 0.5)
@@ -86,6 +105,7 @@ public class RobotModel {
         }
 
         moveRobot(velocity, angularVelocity, 10);
+        notifyListeners();
     }
 
     /**
@@ -130,9 +150,47 @@ public class RobotModel {
 
     protected void setTargetPosition(Point p)
     {
-
         m_targetPositionX = p.x;
         m_targetPositionY = p.y;
+    }
+    /**
+     * Получить координату X
+     *
+     */
+    public double getPositionX() {
+        return m_PositionX;
+    }
+
+    /**
+     * Получить координату Y
+     *
+     */
+    public double getPositionY() {
+        return m_PositionY;
+    }
+
+    /**
+     * Получить направление робота
+     *
+     */
+    public double getDirection() {
+        return m_Direction;
+    }
+
+    /**
+     * Получить координату X цели
+     *
+     */
+    public int getTargetPositionX() {
+        return m_targetPositionX;
+    }
+
+    /**
+     * Получить координату Y цели
+     *
+     */
+    public int getTargetPositionY() {
+        return m_targetPositionY;
     }
 
 }
