@@ -2,7 +2,10 @@ package org.jenko.log;
 
 import org.jenko.log.structures.LogHolder;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -19,21 +22,21 @@ public class LogWindowSource
     private final int m_iQueueLength;
     
     private final LogHolder m_messages;
-    private final ArrayList<LogChangeListener> m_listeners;
+    private final ArrayList<WeakReference<LogChangeListener>> m_listeners;
     private volatile LogChangeListener[] m_activeListeners;
     
     public LogWindowSource(int iQueueLength) 
     {
         m_iQueueLength = iQueueLength;
         m_messages = new LogHolder(iQueueLength);
-        m_listeners = new ArrayList<LogChangeListener>();
+        m_listeners = new ArrayList<WeakReference<LogChangeListener>>();
     }
     
     public void registerListener(LogChangeListener listener)
     {
         synchronized(m_listeners)
         {
-            m_listeners.add(listener);
+            m_listeners.add(new WeakReference<>(listener));
             m_activeListeners = null;
         }
     }
@@ -42,7 +45,7 @@ public class LogWindowSource
     {
         synchronized(m_listeners)
         {
-            m_listeners.remove(listener);
+            m_listeners.remove(new WeakReference(listener));
             m_activeListeners = null;
         }
     }
@@ -51,17 +54,24 @@ public class LogWindowSource
     {
         LogEntry entry = new LogEntry(logLevel, strMessage);
         m_messages.add(entry);
-        LogChangeListener [] activeListeners;
-
+        List<LogChangeListener> activeListeners;
+        if (m_activeListeners != null) {
+            activeListeners = Arrays.asList(m_activeListeners);
+        } else{
+            activeListeners = new ArrayList<LogChangeListener>();
+        }
         synchronized (m_listeners)
         {
-            if (m_activeListeners == null)
-            {
-                activeListeners = m_listeners.toArray(new LogChangeListener [0]);
-                m_activeListeners = activeListeners;
-            } else{
-                activeListeners = m_activeListeners;
+            if (m_activeListeners == null){
+
+                for (WeakReference<LogChangeListener> reference: m_listeners) {
+                    LogChangeListener listener = reference.get();
+                    if (listener != null){
+                        activeListeners.add(listener);
+                    }
+                }
             }
+
         }
         for (LogChangeListener listener : activeListeners)
         {
