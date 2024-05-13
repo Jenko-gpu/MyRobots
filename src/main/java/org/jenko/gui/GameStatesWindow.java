@@ -14,10 +14,10 @@ public class GameStatesWindow extends JInternalFrame implements PropertyChangeLi
     private final JLabel displayAngle;
 
     public final String FrameName = "GameStates";
-    public GameStatesWindow()
+    public GameStatesWindow(RobotModel robotModel)
     {
         super("Информация об игре", false, false, false, false);
-
+        robotModel.addListener(this);
         WindowSaveLoader.getInstance().connect(this,FrameName);
         WindowData windowData = WindowSaveLoader.getInstance().loadWindowState(FrameName);
         this.setSize(250, 70);

@@ -97,10 +97,12 @@ public class MainApplicationFrame extends JFrame implements SaveLoadableWindow
         Logger.debug("Протокол логирования работает");
         addWindow(logWindow);
 
-        GameStatesWindow gameStatesWindow = new GameStatesWindow();
+        RobotModel robotModel = new RobotModel();
+
+        GameStatesWindow gameStatesWindow = new GameStatesWindow(robotModel);
         addWindow(gameStatesWindow);
 
-        GameWindow gameWindow = new GameWindow(gameStatesWindow);
+        GameWindow gameWindow = new GameWindow(robotModel);
 
         addWindow(gameWindow);
     }

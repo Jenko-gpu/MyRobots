@@ -13,9 +13,10 @@ public class GameWindow extends JInternalFrame implements SaveLoadableWindow {
 
 
 
-    public GameWindow(PropertyChangeListener stateWindow)
+    public GameWindow(RobotModel robotModel)
     {
         super("Игровое поле", true, true, true, true);
+
         WindowSaveLoader.getInstance().connect(this, this.FrameName);
         WindowData windowData = WindowSaveLoader.getInstance().loadWindowState(FrameName);
         if (windowData == null){
@@ -31,10 +32,10 @@ public class GameWindow extends JInternalFrame implements SaveLoadableWindow {
                 System.err.println("Ошибка установки состояния iconified для " + this.FrameName);
             }
         }
-        RobotModel robotModel = new RobotModel();
         RobotsController robotsController = new RobotsController(robotModel);
 
-        m_visualizer = new GameVisualizer();
+        m_visualizer = new GameVisualizer(robotModel);
+
 
         robotModel.addListener(m_visualizer);
         robotModel.addListener(stateWindow);

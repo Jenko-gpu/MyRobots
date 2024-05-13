@@ -19,9 +19,10 @@ public class GameVisualizer extends JPanel implements PropertyChangeListener
 
 
 
-    public GameVisualizer()
-    {
 
+    public GameVisualizer(RobotModel robotModel)
+    {
+        robotModel.addListener(this);
         setDoubleBuffered(true);
     }
 
