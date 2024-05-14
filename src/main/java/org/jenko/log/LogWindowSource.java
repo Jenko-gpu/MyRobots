@@ -23,7 +23,7 @@ public class LogWindowSource
     
     private final LogHolder m_messages;
     private final ArrayList<WeakReference<LogChangeListener>> m_listeners;
-    private volatile LogChangeListener[] m_activeListeners;
+    private volatile WeakReference<LogChangeListener>[] m_activeListeners;
     
     public LogWindowSource(int iQueueLength) 
     {
@@ -54,28 +54,30 @@ public class LogWindowSource
     {
         LogEntry entry = new LogEntry(logLevel, strMessage);
         m_messages.add(entry);
-        List<LogChangeListener> activeListeners;
+        List<WeakReference<LogChangeListener>> activeListeners;
         if (m_activeListeners != null) {
             activeListeners = Arrays.asList(m_activeListeners);
         } else{
-            activeListeners = new ArrayList<LogChangeListener>();
+            activeListeners = new ArrayList<WeakReference<LogChangeListener>>();
         }
         synchronized (m_listeners)
         {
             if (m_activeListeners == null){
 
                 for (WeakReference<LogChangeListener> reference: m_listeners) {
-                    LogChangeListener listener = reference.get();
-                    if (listener != null){
-                        activeListeners.add(listener);
+                    if (reference.get() != null) {
+                        activeListeners.add(reference);
                     }
                 }
             }
 
         }
-        for (LogChangeListener listener : activeListeners)
+        for (WeakReference<LogChangeListener> reference : activeListeners)
         {
-            listener.onLogChanged();
+            LogChangeListener listener = reference.get();
+            if (listener != null ) {
+                listener.onLogChanged();
+            }
         }
     }
     
