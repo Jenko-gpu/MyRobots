@@ -12,9 +12,7 @@ public class Localer {
 
     private final Map<Integer, String> cache;
 
-    public static int getLocale_id() {
-        return locale_id;
-    }
+
 
     private static int locale_id = 0;
     private static Locale locale; //= new Locale("ru", "RU");
@@ -70,6 +68,10 @@ public class Localer {
     public static void reFresh(){
         ResourceBundle.clearCache();
         rb = ResourceBundle.getBundle("text", locale);
+    }
+
+    public static int getLocale_id() {
+        return locale_id;
     }
 
     /**
