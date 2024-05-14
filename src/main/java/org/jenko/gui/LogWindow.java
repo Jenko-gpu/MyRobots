@@ -6,6 +6,7 @@ import java.beans.PropertyVetoException;
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 
+import org.jenko.gui.mylocale.Localer;
 import org.jenko.log.LogChangeListener;
 import org.jenko.log.LogEntry;
 import org.jenko.log.LogWindowSource;
@@ -15,11 +16,16 @@ public class LogWindow extends JInternalFrame implements LogChangeListener, Save
     private LogWindowSource m_logSource;
     private TextArea m_logContent;
 
+    Localer localer;
     public final String FrameName = "LogWindow";
 
     public LogWindow(LogWindowSource logSource)
     {
         super("Протокол работы", true, true, true, true);
+
+        localer = Localer.getLocaler();
+
+        this.setTitle(localer.getVal("Log.Title"));
 
         WindowSaveLoader.getInstance().connect(this, this.FrameName);
         WindowData windowData = WindowSaveLoader.getInstance().loadWindowState(FrameName);
@@ -35,7 +41,6 @@ public class LogWindow extends JInternalFrame implements LogChangeListener, Save
             try {
                 UtilForComponent.setStatesForComponent(this, windowData);
             } catch (PropertyVetoException e) {
-                System.err.println("Ошибка при восстановлении hidden окна " + FrameName);
                 e.printStackTrace();
                 System.err.println("Ошибка установки состояния iconified для " + this.FrameName);
             }
