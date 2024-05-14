@@ -1,5 +1,7 @@
 package org.jenko.gui;
 
+import org.jenko.gui.mylocale.Localer;
+
 import javax.swing.*;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
@@ -13,10 +15,16 @@ public class GameStatesWindow extends JInternalFrame implements PropertyChangeLi
     private final JLabel displayPos;
     private final JLabel displayAngle;
 
+    Localer localer;
     public final String FrameName = "GameStates";
     public GameStatesWindow(RobotModel robotModel)
     {
+
         super("Информация об игре", false, false, false, false);
+        localer = Localer.getLocaler();
+
+        this.setTitle(localer.getVal("Stat.Title"));
+
         robotModel.addListener(this);
         WindowSaveLoader.getInstance().connect(this,FrameName);
         WindowData windowData = WindowSaveLoader.getInstance().loadWindowState(FrameName);
@@ -33,19 +41,13 @@ public class GameStatesWindow extends JInternalFrame implements PropertyChangeLi
         }
         setLayout(new BorderLayout());
 
-        displayPos = new JLabel("Робот на начальной координате");
+        displayPos = new JLabel(localer.getVal("Stat.StartPos"));
         displayAngle = new JLabel("");
         add(displayPos, BorderLayout.NORTH);
         add(displayAngle, BorderLayout.SOUTH);
         setVisible(true);
 
-
-
     }
-
-
-
-
 
     @Override
     public WindowData Save() {
@@ -55,8 +57,19 @@ public class GameStatesWindow extends JInternalFrame implements PropertyChangeLi
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
+        // Комментарий к задаче: Вообще не вижу смысла сохранять для каждого состояния строки.
+        // Ибо количество строк будет равно квадрату от размера поля.
         RobotModel robot = (RobotModel) evt.getNewValue();
-        displayPos.setText("Робот на координате "+ (int) robot.getPositionX() +":"+ (int) robot.getPositionY());
-        displayAngle.setText("Угол робота: "+ robot.getDirection());
+        StringBuilder posBuilder = new StringBuilder();
+        posBuilder.append(localer.getVal("Stat.PosMessage"))
+                .append((int) robot.getPositionX())
+                .append(":")
+                .append((int) robot.getPositionY());
+        displayPos.setText(posBuilder.toString());
+
+        StringBuilder angleBuilder = new StringBuilder();
+        angleBuilder.append(localer.getVal("Stat.AngleMessage"))
+                .append(robot.getDirection());
+        displayAngle.setText(angleBuilder.toString());
     }
 }

@@ -16,6 +16,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.JOptionPane;
 
+import org.jenko.gui.mylocale.Localer;
 import org.jenko.log.Logger;
 
 /**
@@ -30,15 +31,21 @@ public class MainApplicationFrame extends JFrame implements SaveLoadableWindow
 
     public final String FrameName = "MainFrame";
 
-    final Object[]  YES_NO_OPTION_RUS = {
-            "Да", "Нет"
-    };
+    /**
+     *
+     */
+    public Localer localer;
+
+    //final Object[] YES_NO_OPTION = null;//{ "Да", "Нет" };
 
     public MainApplicationFrame() {
 
         //Make the big window be indented 50 pixels from each edge
         //of the screen. {"LogWindow":null,"MainFrame":{"pos_x":603,"pos_y":76,"is_hidden":false,"width":779,"height":800}}
         WindowSaveLoader.getInstance().connect(this, this.FrameName);
+
+        localer = Localer.getLocaler();
+
         WindowData windowData = WindowSaveLoader.getInstance().loadWindowState(this.FrameName);
         int inset = 50;
         this.setVisible(true);
@@ -75,16 +82,23 @@ public class MainApplicationFrame extends JFrame implements SaveLoadableWindow
 
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                Object[] YES_NO_OPTION = {localer.getVal("Yes"), localer.getVal("No")};
+
                 int result  = JOptionPane.showOptionDialog(getParent(),
-                        "Вы точно хотите закрыть приложение?", "Закрыть приложение?",
+                        localer.getVal("AskCloseApplication"), localer.getVal("CloseApplication") + "?",
                         JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE, null, YES_NO_OPTION_RUS, YES_NO_OPTION_RUS[1]);
+                        JOptionPane.QUESTION_MESSAGE, null, YES_NO_OPTION, YES_NO_OPTION[1]);
+
                 if (result == JOptionPane.YES_OPTION){
                     System.out.println("Program is closing");
                     WindowSaveLoader.getInstance().saveAllWidows();
+
                     System.exit(0);
                 }
+
+
             }
+            
         });
     }
 
@@ -94,7 +108,7 @@ public class MainApplicationFrame extends JFrame implements SaveLoadableWindow
      */
     private void InitSubWindows(){
         LogWindow logWindow =  new LogWindow(Logger.getDefaultLogSource());
-        Logger.debug("Протокол логирования работает");
+        Logger.debug(localer.getVal("Log.Ok"));
         addWindow(logWindow);
 
         RobotModel robotModel = new RobotModel();
@@ -145,13 +159,13 @@ public class MainApplicationFrame extends JFrame implements SaveLoadableWindow
     private JMenuBar generateMenuBar() {
         JMenuBar menuBar = new JMenuBar();
 
-        JMenu lookAndFeelMenu = new JMenu("Режим отображения");
+        JMenu lookAndFeelMenu = new JMenu(localer.getVal("DisplayMode"));
         lookAndFeelMenu.setMnemonic(KeyEvent.VK_V);
         lookAndFeelMenu.getAccessibleContext().setAccessibleDescription(
                 "Управление режимом отображения приложения");
 
         {
-            JMenuItem systemLookAndFeel = new JMenuItem("Системная схема", KeyEvent.VK_S);
+            JMenuItem systemLookAndFeel = new JMenuItem(localer.getVal("DisplayMode.System"), KeyEvent.VK_S);
             systemLookAndFeel.addActionListener((event) -> {
                 setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                 this.invalidate();
@@ -160,7 +174,7 @@ public class MainApplicationFrame extends JFrame implements SaveLoadableWindow
         }
 
         {
-            JMenuItem crossplatformLookAndFeel = new JMenuItem("Универсальная схема", KeyEvent.VK_S);
+            JMenuItem crossplatformLookAndFeel = new JMenuItem(localer.getVal("DisplayMode.Universal"), KeyEvent.VK_S);
             crossplatformLookAndFeel.addActionListener((event) -> {
                 setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
                 this.invalidate();
@@ -168,34 +182,77 @@ public class MainApplicationFrame extends JFrame implements SaveLoadableWindow
             lookAndFeelMenu.add(crossplatformLookAndFeel);
         }
 
-        JMenu testMenu = new JMenu("Тесты");
+        JMenu testMenu = new JMenu(localer.getVal("Tests"));
         testMenu.setMnemonic(KeyEvent.VK_T);
         testMenu.getAccessibleContext().setAccessibleDescription(
                 "Тестовые команды");
 
         {
-            JMenuItem addLogMessageItem = new JMenuItem("Сообщение в лог", KeyEvent.VK_S);
+            JMenuItem addLogMessageItem = new JMenuItem(localer.getVal("Tests.MessageLog"), KeyEvent.VK_S);
             addLogMessageItem.addActionListener((event) -> {
-                Logger.debug("Новая строка");
+                Logger.debug(localer.getVal("Log.NewLine"));
             });
             testMenu.add(addLogMessageItem);
         }
 
         {
-            JMenuItem addLogMessageItem = new JMenuItem("Ошибку в лог", KeyEvent.VK_S);
+            JMenuItem addLogMessageItem = new JMenuItem(localer.getVal("Tests.ErrorLog"), KeyEvent.VK_S);
             addLogMessageItem.addActionListener((event) -> {
-                Logger.error("Ошибка");
+                Logger.error(localer.getVal("Log.Error"));
             });
             testMenu.add(addLogMessageItem);
         }
 
-        JMenuItem quitItem = new JMenuItem("Выйти из приложения", KeyEvent.VK_X);
+        JMenuItem quitItem = new JMenuItem(localer.getVal("CloseApplication"), KeyEvent.VK_X);
             quitItem.addActionListener((event) -> {
             Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(
                     new WindowEvent(this, WindowEvent.WINDOW_CLOSING)
             );
         });
 
+
+
+        JMenu languageMenu = new JMenu(localer.getVal("Language"));
+        testMenu.setMnemonic(KeyEvent.VK_T);
+        testMenu.getAccessibleContext().setAccessibleDescription(
+                "Язык интерфейса");
+
+        {
+            JMenuItem addLogMessageItem = new JMenuItem(localer.getVal("Language.Rus"), KeyEvent.VK_S);
+            addLogMessageItem.addActionListener((event) -> {
+                if (Localer.getLocale_id() != 0){
+                    Localer.setLocale(0);
+
+                    Localer.SaveLocale();
+                    Localer.reFresh();
+
+                    MainApplicationFrame main = new MainApplicationFrame();
+                    main.setVisible(true);
+                    MainApplicationFrame.this.dispose();
+                }
+
+            });
+            languageMenu.add(addLogMessageItem);
+        }
+
+        {
+            JMenuItem addLogMessageItem = new JMenuItem(localer.getVal("Language.Trans"), KeyEvent.VK_S);
+            addLogMessageItem.addActionListener((event) -> {
+                if (Localer.getLocale_id() != 1){
+                    Localer.setLocale(1);
+
+                    Localer.SaveLocale();
+                    Localer.reFresh();
+
+                    MainApplicationFrame main = new MainApplicationFrame();
+                    main.setVisible(true);
+                    MainApplicationFrame.this.dispose();
+                }
+            });
+            languageMenu.add(addLogMessageItem);
+        }
+
+        menuBar.add(languageMenu);
         menuBar.add(lookAndFeelMenu);
         menuBar.add(testMenu);
         menuBar.add(quitItem);

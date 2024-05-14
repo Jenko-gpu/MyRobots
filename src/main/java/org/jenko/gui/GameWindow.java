@@ -1,9 +1,10 @@
 package org.jenko.gui;
 
+import org.jenko.gui.mylocale.Localer;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import javax.swing.*;
 
@@ -11,11 +12,14 @@ public class GameWindow extends JInternalFrame implements SaveLoadableWindow {
     private final GameVisualizer m_visualizer;
     private final String FrameName = "GameWindow";
 
-
+    Localer localer;
 
     public GameWindow(RobotModel robotModel)
     {
         super("Игровое поле", true, true, true, true);
+
+        localer = Localer.getLocaler();
+        this.setTitle(localer.getVal("Game.Title"));
 
         WindowSaveLoader.getInstance().connect(this, this.FrameName);
         WindowData windowData = WindowSaveLoader.getInstance().loadWindowState(FrameName);
