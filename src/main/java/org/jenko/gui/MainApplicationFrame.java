@@ -217,6 +217,7 @@ public class MainApplicationFrame extends JFrame implements SaveLoadableWindow
             addLogMessageItem.addActionListener((event) -> {
                 Localer.setLocale(0);
                 Localer.SaveLocale();
+                Localer.reFresh();
                 Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(
                         new WindowEvent(this, WindowEvent.WINDOW_CLOSING)
                 );
@@ -229,6 +230,7 @@ public class MainApplicationFrame extends JFrame implements SaveLoadableWindow
             addLogMessageItem.addActionListener((event) -> {
                 Localer.setLocale(1);
                 Localer.SaveLocale();
+                Localer.reFresh();
                 Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(
                         new WindowEvent(this, WindowEvent.WINDOW_CLOSING)
                 );

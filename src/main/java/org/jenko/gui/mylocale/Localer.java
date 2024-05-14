@@ -62,6 +62,12 @@ public class Localer {
         }
     }
 
+
+    public static void reFresh(){
+        ResourceBundle.clearCache();
+        rb = ResourceBundle.getBundle("text", locale);
+    }
+
     /**
      * Получить локализированную строку по ключу.
      * @param key
