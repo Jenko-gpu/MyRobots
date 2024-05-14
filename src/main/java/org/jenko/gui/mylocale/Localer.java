@@ -12,7 +12,11 @@ public class Localer {
 
     private final Map<Integer, String> cache;
 
-    private static int locale_id;
+    public static int getLocale_id() {
+        return locale_id;
+    }
+
+    private static int locale_id = 0;
     private static Locale locale; //= new Locale("ru", "RU");
     private static ResourceBundle rb;
 
@@ -43,7 +47,7 @@ public class Localer {
      */
     public static void setLocale(int loc){
         if (loc >= 2 || loc < 0){
-            loc = -1;
+            loc = 0;
         }
         if (locale_id != loc){
             locale_id = loc;

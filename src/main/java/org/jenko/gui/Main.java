@@ -18,5 +18,6 @@ public class  Main
       }
       SwingUtilities.invokeLater(() -> {
         MainApplicationFrame frame = new MainApplicationFrame();
+
       });
     }}

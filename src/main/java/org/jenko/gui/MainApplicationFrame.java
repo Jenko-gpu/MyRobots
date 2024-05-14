@@ -88,12 +88,17 @@ public class MainApplicationFrame extends JFrame implements SaveLoadableWindow
                         localer.getVal("AskCloseApplication"), localer.getVal("CloseApplication") + "?",
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE, null, YES_NO_OPTION, YES_NO_OPTION[1]);
+
                 if (result == JOptionPane.YES_OPTION){
                     System.out.println("Program is closing");
                     WindowSaveLoader.getInstance().saveAllWidows();
+
                     System.exit(0);
                 }
+
+
             }
+            
         });
     }
 
@@ -215,12 +220,17 @@ public class MainApplicationFrame extends JFrame implements SaveLoadableWindow
         {
             JMenuItem addLogMessageItem = new JMenuItem(localer.getVal("Language.Rus"), KeyEvent.VK_S);
             addLogMessageItem.addActionListener((event) -> {
-                Localer.setLocale(0);
-                Localer.SaveLocale();
-                Localer.reFresh();
-                Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(
-                        new WindowEvent(this, WindowEvent.WINDOW_CLOSING)
-                );
+                if (Localer.getLocale_id() != 0){
+                    Localer.setLocale(0);
+
+                    Localer.SaveLocale();
+                    Localer.reFresh();
+
+                    MainApplicationFrame main = new MainApplicationFrame();
+                    main.setVisible(true);
+                    MainApplicationFrame.this.dispose();
+                }
+
             });
             languageMenu.add(addLogMessageItem);
         }
@@ -228,12 +238,16 @@ public class MainApplicationFrame extends JFrame implements SaveLoadableWindow
         {
             JMenuItem addLogMessageItem = new JMenuItem(localer.getVal("Language.Trans"), KeyEvent.VK_S);
             addLogMessageItem.addActionListener((event) -> {
-                Localer.setLocale(1);
-                Localer.SaveLocale();
-                Localer.reFresh();
-                Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(
-                        new WindowEvent(this, WindowEvent.WINDOW_CLOSING)
-                );
+                if (Localer.getLocale_id() != 1){
+                    Localer.setLocale(1);
+
+                    Localer.SaveLocale();
+                    Localer.reFresh();
+
+                    MainApplicationFrame main = new MainApplicationFrame();
+                    main.setVisible(true);
+                    MainApplicationFrame.this.dispose();
+                }
             });
             languageMenu.add(addLogMessageItem);
         }
