@@ -22,22 +22,20 @@ public class LogWindowSource
     private final int m_iQueueLength;
     
     private final LogHolder m_messages;
-    private final ArrayList<WeakReference<LogChangeListener>> m_listeners;
-    private volatile WeakReference<LogChangeListener>[] m_activeListeners;
+    private final ArrayList<WeakListener> m_listeners;
     
     public LogWindowSource(int iQueueLength) 
     {
         m_iQueueLength = iQueueLength;
         m_messages = new LogHolder(iQueueLength);
-        m_listeners = new ArrayList<WeakReference<LogChangeListener>>();
+        m_listeners = new ArrayList<WeakListener>();
     }
     
     public void registerListener(LogChangeListener listener)
     {
         synchronized(m_listeners)
         {
-            m_listeners.add(new WeakReference<>(listener));
-            m_activeListeners = null;
+            m_listeners.add(new WeakListener(listener));
         }
     }
     
@@ -45,8 +43,7 @@ public class LogWindowSource
     {
         synchronized(m_listeners)
         {
-            m_listeners.remove(new WeakReference(listener));
-            m_activeListeners = null;
+            m_listeners.remove(new WeakListener(listener));
         }
     }
     
@@ -54,25 +51,19 @@ public class LogWindowSource
     {
         LogEntry entry = new LogEntry(logLevel, strMessage);
         m_messages.add(entry);
-        List<WeakReference<LogChangeListener>> activeListeners;
-        if (m_activeListeners != null) {
-            activeListeners = Arrays.asList(m_activeListeners);
-        } else{
-            activeListeners = new ArrayList<WeakReference<LogChangeListener>>();
-        }
+        List<WeakListener> activeListeners = new ArrayList<WeakListener>();
+
         synchronized (m_listeners)
         {
-            if (m_activeListeners == null){
-
-                for (WeakReference<LogChangeListener> reference: m_listeners) {
-                    if (reference.get() != null) {
-                        activeListeners.add(reference);
-                    }
+            for (WeakListener reference: m_listeners) {
+                if (reference.get() != null) {
+                    activeListeners.add(reference);
+                } else {
+                    m_listeners.remove(reference);
                 }
             }
-
         }
-        for (WeakReference<LogChangeListener> reference : activeListeners)
+        for (WeakListener reference : activeListeners)
         {
             LogChangeListener listener = reference.get();
             if (listener != null ) {
@@ -81,8 +72,7 @@ public class LogWindowSource
         }
     }
     
-    public int size()
-    {
+    public int size(){
         return m_messages.size();
     }
 
