@@ -3,6 +3,7 @@ package org.jenko.log;
 import org.jenko.log.structures.LogHolder;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -19,22 +20,20 @@ public class LogWindowSource
     private final int m_iQueueLength;
     
     private final LogHolder m_messages;
-    private final ArrayList<LogChangeListener> m_listeners;
-    private volatile LogChangeListener[] m_activeListeners;
+    private final ArrayList<WeakListener> m_listeners;
     
     public LogWindowSource(int iQueueLength) 
     {
         m_iQueueLength = iQueueLength;
         m_messages = new LogHolder(iQueueLength);
-        m_listeners = new ArrayList<LogChangeListener>();
+        m_listeners = new ArrayList<WeakListener>();
     }
     
     public void registerListener(LogChangeListener listener)
     {
         synchronized(m_listeners)
         {
-            m_listeners.add(listener);
-            m_activeListeners = null;
+            m_listeners.add(new WeakListener(listener));
         }
     }
     
@@ -42,8 +41,7 @@ public class LogWindowSource
     {
         synchronized(m_listeners)
         {
-            m_listeners.remove(listener);
-            m_activeListeners = null;
+            m_listeners.remove(new WeakListener(listener));
         }
     }
     
@@ -51,26 +49,28 @@ public class LogWindowSource
     {
         LogEntry entry = new LogEntry(logLevel, strMessage);
         m_messages.add(entry);
-        LogChangeListener [] activeListeners;
+        List<WeakListener> activeListeners = new ArrayList<WeakListener>();
 
         synchronized (m_listeners)
         {
-            if (m_activeListeners == null)
-            {
-                activeListeners = m_listeners.toArray(new LogChangeListener [0]);
-                m_activeListeners = activeListeners;
-            } else{
-                activeListeners = m_activeListeners;
+            for (WeakListener reference: m_listeners) {
+                if (reference.get() != null) {
+                    activeListeners.add(reference);
+                } else {
+                    m_listeners.remove(reference);
+                }
             }
         }
-        for (LogChangeListener listener : activeListeners)
+        for (WeakListener reference : activeListeners)
         {
-            listener.onLogChanged();
+            LogChangeListener listener = reference.get();
+            if (listener != null ) {
+                listener.onLogChanged();
+            }
         }
     }
     
-    public int size()
-    {
+    public int size(){
         return m_messages.size();
     }
 
