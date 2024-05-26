@@ -2,9 +2,7 @@ package org.jenko.log;
 
 import org.jenko.log.structures.LogHolder;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 

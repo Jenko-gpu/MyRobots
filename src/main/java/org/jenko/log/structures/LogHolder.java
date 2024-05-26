@@ -3,7 +3,6 @@ package org.jenko.log.structures;
 import org.jenko.log.LogEntry;
 
 import java.util.Iterator;
-import java.util.List;
 
 /**
  *  Структура данных основанная на списке. <br>
