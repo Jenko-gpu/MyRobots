@@ -2,25 +2,26 @@ package org.jenko.log;
 
 import java.lang.ref.WeakReference;
 
-public class WeakListener {
-    private WeakReference<LogChangeListener> listener;
+/**
+ * Реализация слабой ссылки для слушателей изменений лога. <br/>
+ * Предназначен для использования в механизме уведомлений для предотвращения утечек памяти.
+ */
+public class WeakListener extends WeakReference<LogChangeListener>{
+
+    /**
+     * Сохранённый хэш код на случай, если слушатель удалится.
+     */
+    private final int cacheHashCode;
 
     public WeakListener(LogChangeListener listener){
-        this.listener = new WeakReference<LogChangeListener>(listener);
+        super(listener);
+        cacheHashCode = listener.hashCode();
     }
 
-
-    public LogChangeListener get(){
-        return listener.get();
-    }
 
     @Override
     public int hashCode() {
-        LogChangeListener val = listener.get();
-        if (val != null){
-            return val.hashCode();
-        }
-        return 0;
+        return cacheHashCode;
     }
 
     @Override
@@ -33,9 +34,9 @@ public class WeakListener {
             return false;
         }
 
-        LogChangeListener cur = listener.get();
+        LogChangeListener cur = get();
         LogChangeListener other = ((WeakListener) obj).get();
 
-        return cur != null && other != null && cur.equals(other);
+        return cur != null && cur.equals(other);
     }
 }
