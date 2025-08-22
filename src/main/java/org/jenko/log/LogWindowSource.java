@@ -3,74 +3,110 @@ package org.jenko.log;
 import org.jenko.log.structures.LogHolder;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
- * Что починить:
- * 1. Этот класс порождает утечку ресурсов (связанные слушатели оказываются
- * удерживаемыми в памяти)
- * 2. Этот класс хранит активные сообщения лога, но в такой реализации он 
- * их лишь накапливает. Надо же, чтобы количество сообщений в логе было ограничено 
- * величиной m_iQueueLength (т.е. реально нужна очередь сообщений 
- * ограниченного размера) 
+ * Источник сообщений лога для оконного интерфейса. <br/>
+ * Обеспечивает хранение лог-сообщений ограниченной емкости и уведомление подписчиков об изменениях. <br/>
+ * Использует слабые ссылки на слушателей для предотвращения утечек памяти.
  */
 public class LogWindowSource
 {
     private final int m_iQueueLength;
     
     private final LogHolder m_messages;
-    private final ArrayList<LogChangeListener> m_listeners;
-    private volatile LogChangeListener[] m_activeListeners;
-    
+    private final ArrayList<WeakListener> m_listeners;
+    private volatile List<WeakListener> m_ActiveListeners;
+
+    /**
+     * Создает новый источник лог-сообщений с указанной максимальной емкостью.
+     * @param iQueueLength максимальное количество хранимых сообщений
+     */
     public LogWindowSource(int iQueueLength) 
     {
         m_iQueueLength = iQueueLength;
         m_messages = new LogHolder(iQueueLength);
-        m_listeners = new ArrayList<LogChangeListener>();
+        m_listeners = new ArrayList<WeakListener>();
     }
-    
+
+    /**
+     * Регистрирует слушателя изменений лога. <br/>
+     * @param listener слушатель изменений лога
+     */
     public void registerListener(LogChangeListener listener)
     {
         synchronized(m_listeners)
         {
-            m_listeners.add(listener);
-            m_activeListeners = null;
+            m_listeners.add(new WeakListener(listener));
+            m_ActiveListeners = null;
         }
     }
-    
+
+    /**
+     * Удаляет слушателя из списка подписчиков.
+     * @param listener слушатель для удаления
+     */
     public void unregisterListener(LogChangeListener listener)
     {
         synchronized(m_listeners)
         {
-            m_listeners.remove(listener);
-            m_activeListeners = null;
+            m_listeners.remove(new WeakListener(listener));
+            m_ActiveListeners = null;
         }
     }
-    
+
+    /**
+     * Добавляет новое сообщение в лог. <br/>
+     * Уведомляет всех активных слушателей об изменении.
+     * @param logLevel уровень логирования
+     * @param strMessage текст сообщения
+     */
     public void append(LogLevel logLevel, String strMessage)
     {
         LogEntry entry = new LogEntry(logLevel, strMessage);
         m_messages.add(entry);
-        LogChangeListener [] activeListeners;
+        List<WeakListener> activeListeners = m_ActiveListeners;
 
-        synchronized (m_listeners)
-        {
-            if (m_activeListeners == null)
-            {
-                activeListeners = m_listeners.toArray(new LogChangeListener [0]);
-                m_activeListeners = activeListeners;
-            } else{
-                activeListeners = m_activeListeners;
+        // Double-checked
+        if (m_ActiveListeners == null) {
+
+            synchronized (m_listeners) {
+
+                if (m_ActiveListeners == null) {
+                    activeListeners = new ArrayList<>();
+
+                    // Собираем "живых" слушателей, а "мёртвых" удаляем из списка слушателей
+                    for (WeakListener reference : m_listeners) {
+                        if (reference.get() != null) {
+                            activeListeners.add(reference);
+                        } else {
+                            m_listeners.remove(reference);
+                        }
+                    }
+                    m_ActiveListeners = activeListeners;
+                }
             }
         }
-        for (LogChangeListener listener : activeListeners)
+        if (activeListeners != null) notifyLogChanged(activeListeners);
+    }
+
+    /**
+     * Уведомляет всех слушателей об изменении лога.
+     * @param listeners список слушателей для уведомления
+     */
+    private void notifyLogChanged(List<WeakListener> listeners){
+        for (WeakListener reference : listeners)
         {
-            listener.onLogChanged();
+            LogChangeListener listener = reference.get();
+            if (listener != null ) {
+                listener.onLogChanged();
+            }
         }
     }
+
     
-    public int size()
-    {
+    public int size(){
         return m_messages.size();
     }
 
@@ -84,6 +120,10 @@ public class LogWindowSource
         return m_messages.subList(startFrom, indexTo);
     }
 
+    /**
+     * Возвращает все сообщения лога.
+     * @return итерируемая коллекция всех сообщений
+     */
     public Iterable<LogEntry> all()
     {
         return m_messages;

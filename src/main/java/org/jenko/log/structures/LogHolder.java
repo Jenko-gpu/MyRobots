@@ -3,7 +3,6 @@ package org.jenko.log.structures;
 import org.jenko.log.LogEntry;
 
 import java.util.Iterator;
-import java.util.List;
 
 /**
  *  Структура данных основанная на списке. <br>
@@ -96,7 +95,9 @@ public class LogHolder implements Iterable<LogEntry> {
 
     @Override
     public Iterator<LogEntry> iterator() {
-        return new LogHolderIterator(this);
+        synchronized (lock){
+            return new LogHolderIterator(this);
+        }
     }
 
     Node getHead(){
